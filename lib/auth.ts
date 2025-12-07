@@ -1,11 +1,11 @@
-import { db } from "@/db/drizzle";
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { env } from "./env";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { prisma } from "./db";
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    provider: "pg",
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
   }),
   emailAndPassword: {
     enabled: true,
@@ -14,6 +14,6 @@ export const auth = betterAuth({
     github: {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
-    }
-  }
+    },
+  },
 });
