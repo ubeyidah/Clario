@@ -1,0 +1,29 @@
+import Wrapper from "@/components/common/wrapper"
+import { Button, buttonVariants } from "@/components/ui/button"
+import Image from "next/image"
+import Link from "next/link"
+import NavLinks from "./nva-links"
+import { Search } from "lucide-react"
+
+const Navbar = () => {
+  return (
+    <header className="py-4 backdrop-blur-2xl">
+      <Wrapper className="flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/clario.png" width={40} height={40} alt="clario" />
+          <h1 className="text-xl font-bold">Clario.</h1>
+        </Link>
+        <NavLinks />
+        <div className="flex gap-2 items-center">
+          <Button variant="outline" size="icon" className="rounded-xl">
+            <Search />
+          </Button>
+          <Link href="/sign-in" className={buttonVariants()}>Sign In</Link>
+        </div>
+      </Wrapper>
+
+    </header>
+  )
+}
+
+export default Navbar
