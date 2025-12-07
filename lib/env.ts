@@ -6,4 +6,5 @@ export const env = defineEnv({
   GITHUB_CLIENT_SECRET: z.string().min(1),
   RESEND_API_KEY: z.string().startsWith("re_").optional(),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  ARCJET_KEY: z.string().startsWith("ajkey_")
 })

@@ -10,6 +10,9 @@
     "db:migrate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@arcjet/inspect": "1.0.0-beta.15",
+    "@arcjet/ip": "1.0.0-beta.15",
+    "@arcjet/next": "1.0.0-beta.15",
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.2",
     "@prisma/adapter-pg": "^7.1.0",
