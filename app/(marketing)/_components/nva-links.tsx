@@ -11,10 +11,14 @@ const navigationLinks = [
   { href: "/courses", label: "Courses" },
   { href: "/about", label: "About" },
 ];
-const NavLinks = () => {
+
+interface Props {
+  className?: string
+}
+const NavLinks = ({ className }: Props) => {
   const pathname = usePathname()
   return (
-    <div className="flex gap-2">
+    <div className={cn("flex gap-2", className)}>
       {
         navigationLinks.map(link => {
           const isActive = link.href != "/" ? pathname.startsWith(link.href) : pathname === "/"

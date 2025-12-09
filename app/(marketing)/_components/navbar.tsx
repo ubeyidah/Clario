@@ -5,21 +5,25 @@ import Link from "next/link"
 import NavLinks from "./nva-links"
 import { Search } from "lucide-react"
 import UserProfile from "./user-profile"
+import MobileMenu from "./mobile-menu"
 
 const Navbar = () => {
   return (
-    <header className="py-4 backdrop-blur-2xl">
+    <header className="py-4">
       <Wrapper className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/clario.png" width={40} height={40} alt="clario" />
+          <Image src="/clario.png" width={40} height={40} className="max-md:size-10" alt="clario" />
           <h1 className="text-xl font-bold">Clario.</h1>
         </Link>
-        <NavLinks />
+        <div className="hidden md:block">
+          <NavLinks />
+        </div>
         <div className="flex gap-2 items-center">
-          <Button variant="outline" size="icon" className="rounded-xl">
+          <Button variant="outline" size="icon" className="rounded-xl hidden md:flex">
             <Search />
           </Button>
           <UserProfile />
+          <MobileMenu />
         </div>
       </Wrapper>
 
