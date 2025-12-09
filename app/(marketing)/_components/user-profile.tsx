@@ -24,9 +24,7 @@ import Link from "next/link"
 const UserProfile = () => {
   const router = useRouter();
   const { data, error, isPending } = authClient.useSession()
-  if (isPending) return <h1>Loading...</h1>
-  if (error) return <h1>error </h1>
-  if (!data) return <Link href="/sign-in" className={buttonVariants()}>Sign In</Link>
+  if (!data || isPending || error) return <Link href="/sign-in" className={buttonVariants()}>Sign In</Link>
   const userName = data?.user.name || data?.user.email?.split('@')[0]
   const fallbackImage = `https://avatar.vercel.sh/${userName}?rounded=60`
   const handleSignout = async () => {
