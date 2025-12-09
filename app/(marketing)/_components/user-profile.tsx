@@ -19,10 +19,13 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
+import { useTheme } from "next-themes"
+import { Check } from "lucide-react"
 
 
 const UserProfile = () => {
   const router = useRouter();
+  const { setTheme, theme } = useTheme()
   const { data, error, isPending } = authClient.useSession()
   if (!data || isPending || error) return <Link href="/sign-in" className={buttonVariants()}>Sign In</Link>
   const userName = data?.user.name || data?.user.email?.split('@')[0]
@@ -71,10 +74,10 @@ const UserProfile = () => {
               <DropdownMenuSubTrigger>Themes</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem>System</DropdownMenuItem>
-                  <DropdownMenuItem>Dark</DropdownMenuItem>
+                  <DropdownMenuItem className="flex justify-between items-center" onClick={() => setTheme("system")}>System {theme == "system" && <Check />}</DropdownMenuItem>
+                  <DropdownMenuItem className="flex justify-between items-center" onClick={() => setTheme("dark")}>Dark {theme == "dark" && <Check />} </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Light</DropdownMenuItem>
+                  <DropdownMenuItem className="flex justify-between items-center" onClick={() => setTheme("light")}>Light {theme == "light" && <Check />} </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
