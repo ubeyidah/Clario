@@ -1,9 +1,10 @@
 import Wrapper from "@/components/common/wrapper"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import NavLinks from "./nva-links"
 import { Search } from "lucide-react"
+import UserProfile from "./user-profile"
 
 const Navbar = () => {
   return (
@@ -18,11 +19,11 @@ const Navbar = () => {
           <Button variant="outline" size="icon" className="rounded-xl">
             <Search />
           </Button>
-          <Link href="/sign-in" className={buttonVariants()}>Sign In</Link>
+          <UserProfile />
         </div>
       </Wrapper>
 
-    </header>
+    </header >
   )
 }
 
