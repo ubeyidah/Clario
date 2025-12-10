@@ -1,8 +1,9 @@
+import HeroSection from "./_components/hero-section";
 
 export default function Home() {
   return (
-    <div>
-      <h1>Clario</h1>
-    </div>
+    <main>
+      <HeroSection />
+    </main>
   );
 }

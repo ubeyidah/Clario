@@ -22,7 +22,7 @@ const NavLinks = ({ className }: Props) => {
       {
         navigationLinks.map(link => {
           const isActive = link.href != "/" ? pathname.startsWith(link.href) : pathname === "/"
-          return <Link href={link.href} key={link.href} className={buttonVariants({ variant: "ghost", className: cn({ "bg-accent text-accent-foreground dark:bg-accent/50": isActive }) })}> {link.label}</Link>
+          return <Link href={link.href} key={link.href} className={buttonVariants({ variant: "link", className: cn({ "hover:no-underline! text-muted-foreground! hover:text-foreground!": true, "text-foreground!": isActive }) })}> {link.label}</Link>
         })
       }
     </div>
