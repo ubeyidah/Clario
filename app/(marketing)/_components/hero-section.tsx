@@ -14,7 +14,7 @@ export default function HeroSection() {
         <div className="h-320 -translate-y-87.5 absolute left-0 top-0 w-60 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
       </div>
 
-      <section className="bg-muted/50 dark:bg-background overflow-hidden">
+      <section className="overflow-hidden">
         <div className="relative mx-auto max-w-5xl px-6 pt-28 lg:pt-24">
           <div className="relative z-10 mx-auto max-w-2xl text-center">
             <h1 className="text-balance text-4xl font-semibold md:text-5xl lg:text-6xl">Where Modern Learning Begins.</h1>
