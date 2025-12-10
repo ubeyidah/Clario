@@ -9,7 +9,7 @@ import MobileMenu from "./mobile-menu"
 
 const Navbar = () => {
   return (
-    <header className="py-4">
+    <header className="py-4 z-40 relative bg-muted/50 dark:bg-transparent">
       <Wrapper className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/clario.png" width={40} height={40} className="max-md:size-10" alt="clario" />
