@@ -170,15 +170,6 @@ Clario uses Better Auth for secure authentication:
 - **Email Templates** - Customizable email designs
 - **Transactional Emails** - Verification, notifications, etc.
 
-## 🎨 UI Components
-
-Clario includes a comprehensive UI component library built with:
-
-- **Radix UI** - Accessible component primitives
-- **Tailwind CSS** - Utility-first styling
-- **Lucide React** - Beautiful icon set
-- **Recharts** - Interactive data visualization
-
 ### Key Components
 
 - Authentication forms
@@ -239,7 +230,4 @@ We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) 
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-[⭐ Star this repo](https://github.com/your-username/clario) • [🐛 Report issues](https://github.com/your-username/clario/issues) • [📖 Documentation](https://clario-docs.vercel.app)
-
+This project is licensed under the MIT License
