@@ -1,36 +1,316 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# 🎓 Clario
 
-First, run the development server:
+**Modern Learning Management System Built with Next.js**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+[![Next.js](https://img.shields.io/badge/Next.js-16.0.7-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2.0-blue?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.17-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-7.1.0-2D3748?style=flat-square&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+A comprehensive, scalable Learning Management System designed for modern educational institutions. Clario provides an intuitive platform for course management, student enrollment, and interactive learning experiences.
+
+</div>
+
+## ✨ Features
+
+- 🚀 **Modern Tech Stack** - Built with Next.js 16, React 19, and TypeScript
+- 🎨 **Beautiful UI** - Responsive design with Tailwind CSS and Radix UI components
+- 🔐 **Secure Authentication** - Better Auth integration with email verification
+- 📊 **Analytics Dashboard** - Real-time insights with Recharts
+- 🌙 **Dark Mode Support** - Seamless theme switching
+- 📱 **Mobile Responsive** - Optimized for all devices
+- 🗄️ **Robust Database** - PostgreSQL with Prisma ORM
+- 📧 **Email Notifications** - Resend integration for transactional emails
+- 🛡️ **Security First** - Arcjet protection and rate limiting
+- 🎯 **Type Safety** - Full TypeScript coverage with Zod validation
+
+## 🏗️ Architecture
+
+### Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Framework** | Next.js 16 (App Router) |
+| **Frontend** | React 19, TypeScript 5.9 |
+| **Styling** | Tailwind CSS 4.1, Radix UI |
+| **Database** | PostgreSQL, Prisma 7.1 |
+| **Authentication** | Better Auth 1.4 |
+| **Email** | Resend 6.5 |
+| **Security** | Arcjet 1.0-beta |
+| **Forms** | React Hook Form, Zod |
+| **Charts** | Recharts 2.15 |
+| **State Management** | React Context, Hooks |
+
+### Project Structure
+
+```
+clario/
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   # Authentication routes
+│   │   ├── sign-in/             # Sign-in page
+│   │   └── verify-request/      # Email verification
+│   ├── (marketing)/             # Public marketing pages
+│   │   ├── _components/         # Marketing components
+│   │   └── page.tsx             # Landing page
+│   ├── api/                     # API routes
+│   │   └── auth/               # Authentication endpoints
+│   ├── globals.css             # Global styles
+│   └── layout.tsx              # Root layout
+├── components/                  # Reusable components
+│   ├── common/                 # Shared components
+│   ├── ui/                     # UI component library
+│   ├── mode-toggle.tsx         # Theme switcher
+│   └── theme-provider.tsx      # Theme context
+├── hooks/                       # Custom React hooks
+├── lib/                         # Utility libraries
+│   ├── auth.ts                 # Authentication configuration
+│   ├── db.ts                   # Database client
+│   ├── email/                  # Email templates
+│   └── utils.ts                # Helper functions
+├── prisma/                      # Database schema & migrations
+│   ├── schema.prisma           # Database model
+│   └── migrations/             # Migration files
+└── public/                      # Static assets
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+ 
+- PostgreSQL 14+
+- pnpm (recommended) or npm/yarn
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/clario.git
+   cd clario
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Environment setup**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Configure your environment variables:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://username:password@localhost:5432/clario"
+   
+   # Authentication
+   AUTH_SECRET="your-auth-secret"
+   AUTH_URL="http://localhost:3000"
+   
+   # Email (Resend)
+   RESEND_API_KEY="your-resend-api-key"
+   RESEND_FROM_EMAIL="noreply@yourdomain.com"
+   
+   # Arcjet (Security)
+   ARCJET_KEY="your-arcjet-key"
+   ```
 
-## Deploy on Vercel
+4. **Database setup**
+   ```bash
+   pnpm db:generate
+   pnpm db:migrate
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. **Start development server**
+   ```bash
+   pnpm dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📚 Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Build for production |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Run ESLint |
+| `pnpm db:generate` | Generate Prisma client |
+| `pnpm db:migrate` | Run database migrations |
+| `pnpm db:push` | Push schema to database |
+| `pnpm db:studio` | Open Prisma Studio |
+
+## 🗄️ Database Schema
+
+Clario uses a comprehensive database schema designed for educational platforms:
+
+### Core Models
+
+- **User** - User accounts with authentication
+- **Session** - User session management
+- **Account** - OAuth provider accounts
+- **Verification** - Email verification tokens
+
+### Schema Overview
+
+```prisma
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+}
+```
+
+## 🔧 Configuration
+
+### Authentication
+
+Clario uses Better Auth for secure authentication:
+
+- Email/password authentication
+- Email verification
+- Session management
+- OAuth provider support (ready for Google, GitHub, etc.)
+
+### Security Features
+
+- **Arcjet Integration** - Rate limiting and bot protection
+- **CSRF Protection** - Built-in Next.js security
+- **Input Validation** - Zod schema validation
+- **Secure Headers** - Optimized security headers
+
+### Email System
+
+- **Resend Integration** - Reliable email delivery
+- **Email Templates** - Customizable email designs
+- **Transactional Emails** - Verification, notifications, etc.
+
+## 🎨 UI Components
+
+Clario includes a comprehensive UI component library built with:
+
+- **Radix UI** - Accessible component primitives
+- **Tailwind CSS** - Utility-first styling
+- **Lucide React** - Beautiful icon set
+- **Recharts** - Interactive data visualization
+
+### Key Components
+
+- Authentication forms
+- Navigation components
+- Dashboard widgets
+- Data tables
+- Charts and graphs
+- Modals and dialogs
+
+## 🌱 Development
+
+### Code Style
+
+- **ESLint** - Code linting and formatting
+- **TypeScript** - Type safety and IntelliSense
+- **Prettier** - Code formatting (configured via ESLint)
+
+### Best Practices
+
+- Component-driven development
+- Responsive design first
+- Accessibility focused
+- Performance optimized
+- SEO friendly
+
+## 📈 Performance
+
+Clario is optimized for performance:
+
+- **Next.js 16** - Latest performance improvements
+- **React 19** - Concurrent features
+- **Code Splitting** - Automatic route-based splitting
+- **Image Optimization** - Next.js Image component
+- **Bundle Analysis** - Optimized dependencies
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Connect your repository to Vercel
+2. Configure environment variables
+3. Deploy automatically
+
+### Docker
+
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+### Environment Variables
+
+Ensure all required environment variables are set in production:
+
+- `DATABASE_URL`
+- `AUTH_SECRET`
+- `AUTH_URL`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+- `ARCJET_KEY`
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) - The React framework
+- [Prisma](https://www.prisma.io/) - Modern database toolkit
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Radix UI](https://www.radix-ui.com/) - Unstyled, accessible components
+- [Better Auth](https://better-auth.com/) - Authentication library
+
+## 📞 Support
+
+- 📧 Email: support@clario.com
+- 🐛 Issues: [GitHub Issues](https://github.com/your-username/clario/issues)
+- 📖 Documentation: [clario-docs.vercel.app](https://clario-docs.vercel.app)
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the education community**
+
+[⭐ Star this repo](https://github.com/your-username/clario) • [🐛 Report issues](https://github.com/your-username/clario/issues) • [📖 Documentation](https://clario-docs.vercel.app)
+
+</div>
