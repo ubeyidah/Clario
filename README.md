@@ -33,18 +33,18 @@ A comprehensive, scalable Learning Management System designed for modern educati
 
 ### Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Framework** | Next.js 16 (App Router) |
-| **Frontend** | React 19, TypeScript 5.9 |
-| **Styling** | Tailwind CSS 4.1, Radix UI |
-| **Database** | PostgreSQL, Prisma 7.1 |
-| **Authentication** | Better Auth 1.4 |
-| **Email** | Resend 6.5 |
-| **Security** | Arcjet 1.0-beta |
-| **Forms** | React Hook Form, Zod |
-| **Charts** | Recharts 2.15 |
-| **State Management** | React Context, Hooks |
+| Category             | Technology                 |
+| -------------------- | -------------------------- |
+| **Framework**        | Next.js 16 (App Router)    |
+| **Frontend**         | React 19, TypeScript 5.9   |
+| **Styling**          | Tailwind CSS 4.1, Radix UI |
+| **Database**         | PostgreSQL, Prisma 7.1     |
+| **Authentication**   | Better Auth 1.4            |
+| **Email**            | Resend 6.5                 |
+| **Security**         | Arcjet 1.0-beta            |
+| **Forms**            | React Hook Form, Zod       |
+| **Charts**           | Recharts 2.15              |
+| **State Management** | React Context, Hooks       |
 
 ### Project Structure
 
@@ -82,52 +82,52 @@ clario/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL 14+
 - pnpm (recommended) or npm/yarn
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/your-username/clario.git
+   git clone https://github.com/ubeyidah/clario.git
    cd clario
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Environment setup**
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Configure your environment variables:
+
    ```env
-   # Database
-   DATABASE_URL="postgresql://username:password@localhost:5432/clario"
-   
-   # Authentication
-   AUTH_SECRET="your-auth-secret"
-   AUTH_URL="http://localhost:3000"
-   
-   # Email (Resend)
-   RESEND_API_KEY="your-resend-api-key"
-   RESEND_FROM_EMAIL="noreply@yourdomain.com"
-   
-   # Arcjet (Security)
-   ARCJET_KEY="your-arcjet-key"
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/clario"
+   BETTER_AUTH_URL="http://localhost:3000"
+   BETTER_AUTH_SECRET=""
+   GITHUB_CLIENT_ID=""
+   GITHUB_CLIENT_SECRET=""
+   RESEND_API_KEY=""
+   ARCJET_KEY=""
    ```
 
 4. **Database setup**
+
    ```bash
    pnpm db:generate
    pnpm db:migrate
    ```
 
 5. **Start development server**
+
    ```bash
    pnpm dev
    ```
@@ -137,45 +137,16 @@ clario/
 
 ## 📚 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm db:generate` | Generate Prisma client |
-| `pnpm db:migrate` | Run database migrations |
-| `pnpm db:push` | Push schema to database |
-| `pnpm db:studio` | Open Prisma Studio |
-
-## 🗄️ Database Schema
-
-Clario uses a comprehensive database schema designed for educational platforms:
-
-### Core Models
-
-- **User** - User accounts with authentication
-- **Session** - User session management
-- **Account** - OAuth provider accounts
-- **Verification** - Email verification tokens
-
-### Schema Overview
-
-```prisma
-model User {
-  id            String    @id
-  name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-}
-```
-
-## 🔧 Configuration
+| Script             | Description              |
+| ------------------ | ------------------------ |
+| `pnpm dev`         | Start development server |
+| `pnpm build`       | Build for production     |
+| `pnpm start`       | Start production server  |
+| `pnpm lint`        | Run ESLint               |
+| `pnpm db:generate` | Generate Prisma client   |
+| `pnpm db:migrate`  | Run database migrations  |
+| `pnpm db:push`     | Push schema to database  |
+| `pnpm db:studio`   | Open Prisma Studio       |
 
 ### Authentication
 
@@ -243,27 +214,6 @@ Clario is optimized for performance:
 - **Image Optimization** - Next.js Image component
 - **Bundle Analysis** - Optimized dependencies
 
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Connect your repository to Vercel
-2. Configure environment variables
-3. Deploy automatically
-
-### Docker
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
 ### Environment Variables
 
 Ensure all required environment variables are set in production:
@@ -291,26 +241,5 @@ We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/) - The React framework
-- [Prisma](https://www.prisma.io/) - Modern database toolkit
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [Radix UI](https://www.radix-ui.com/) - Unstyled, accessible components
-- [Better Auth](https://better-auth.com/) - Authentication library
-
-## 📞 Support
-
-- 📧 Email: support@clario.com
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/clario/issues)
-- 📖 Documentation: [clario-docs.vercel.app](https://clario-docs.vercel.app)
-
----
-
-<div align="center">
-
-**Built with ❤️ for the education community**
-
 [⭐ Star this repo](https://github.com/your-username/clario) • [🐛 Report issues](https://github.com/your-username/clario/issues) • [📖 Documentation](https://clario-docs.vercel.app)
 
-</div>
