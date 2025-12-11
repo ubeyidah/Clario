@@ -83,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5 mb-3 hover:bg-transparent focus:bg-transparent">
+              className="data-[slot=sidebar-menu-button]:p-1.5! mb-3 hover:bg-transparent focus:bg-transparent">
               <Link href="/">
 
                 <Image src="/clario.png" width={32} height={32} className="max-md:size-10" alt="clario" />

@@ -1,12 +1,9 @@
 "use client"
 
 import {
-  IconCreditCard,
   IconDashboard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
-  IconUserCircle,
 } from "@tabler/icons-react"
 
 import {
@@ -121,6 +118,8 @@ export function NavUser() {
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
+
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOut} variant="destructive">
               <IconLogout />
               Log out

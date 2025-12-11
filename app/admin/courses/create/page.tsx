@@ -1,6 +1,10 @@
+import { SiteHeader } from "@/components/common/site-header"
+
 const CreatePage = () => {
   return (
-    <div>create a new course</div>
+    <div>
+      <SiteHeader />
+      create a new course</div>
   )
 }
 
