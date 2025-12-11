@@ -15,34 +15,20 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 import { buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { Check } from "lucide-react"
-
+import useLogout from "@/hooks/use-logout"
 
 const UserProfile = () => {
-  const router = useRouter();
+
+  const { signOut } = useLogout()
   const { setTheme, theme } = useTheme()
   const { data, error, isPending } = authClient.useSession()
   if (!data || isPending || error) return <Link href="/sign-in" className={buttonVariants()}>Sign In</Link>
   const userName = data?.user.name || data?.user.email?.split('@')[0]
   const fallbackImage = `https://avatar.vercel.sh/${userName}?rounded=60`
-  const handleSignout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.message("Sign out successfully.")
-          router.push("/")
-        },
-        onError: () => {
-          toast.error("Failed to sign out. Please try again.")
-        }
-      },
-    });
-  }
   return (
     <div>
       <DropdownMenu>
@@ -76,13 +62,12 @@ const UserProfile = () => {
                 <DropdownMenuSubContent>
                   <DropdownMenuItem className="flex justify-between items-center" onClick={() => setTheme("system")}>System {theme == "system" && <Check />}</DropdownMenuItem>
                   <DropdownMenuItem className="flex justify-between items-center" onClick={() => setTheme("dark")}>Dark {theme == "dark" && <Check />} </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem className="flex justify-between items-center" onClick={() => setTheme("light")}>Light {theme == "light" && <Check />} </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={handleSignout}>Sign Out</DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onClick={signOut}>Sign Out</DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
