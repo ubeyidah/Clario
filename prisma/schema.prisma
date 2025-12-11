@@ -80,7 +80,7 @@ model Course {
   fileKey     String
   price       Float
   duration    Float
-  level       CourseLevel @default(Biginner)
+  level       CourseLevel @default(Beginner)
 
   category         String
   shortDescription String
@@ -95,7 +95,7 @@ model Course {
 }
 
 enum CourseLevel {
-  Biginner
+  Beginner
   Intermediate
   Advanced
 }
