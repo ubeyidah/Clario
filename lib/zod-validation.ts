@@ -11,7 +11,7 @@ export const courseSchema = z.object({
   level: z.enum(CourseLevel),
   category: z.enum(COURSE_CATEGORIES_ENUM, "select valid category"),
   shortDescription: z.string().min(6, 'Short description must be at least 6 characters long').max(255, 'Short description cannot exceed 255 characters'),
-  slug: z.string().min(3, 'Slug must be at least 3 characters long'),
+  slug: z.string().min(3, 'Slug must be at least 3 characters long'), // TODO: validate slug is valid with regex 
   status: z.enum(CourseStatus),
   fileKey: z.url({ message: "thumbnail url is required" })
 })

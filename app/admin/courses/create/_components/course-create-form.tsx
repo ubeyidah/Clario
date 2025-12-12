@@ -1,7 +1,7 @@
 "use client"
 import { CourseLevel } from "@/lib/generated/prisma/enums"
 import { CourseSchema } from "@/lib/types"
-import { courseSchema } from "@/lib/zod-validation"
+import { courseSchema, COURSE_CATEGORIES_ENUM } from "@/lib/zod-validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import {
@@ -20,20 +20,22 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { COURSE_CATEGORIES } from "@/lib/constants"
 import { PlusIcon } from "lucide-react"
+import Editor from "@/components/text-editor/editor"
+
 const CourseCreateForm = () => {
   const form = useForm({
     resolver: zodResolver(courseSchema),
     defaultValues: {
       title: '',
-      category: undefined,
+      category: COURSE_CATEGORIES_ENUM[0],
       description: '',
       duration: "",
-      level: undefined,
-      price: undefined,
+      level: "Beginner",
+      price: "",
       shortDescription: '',
       slug: '',
-      status: undefined
-
+      status: "Draft",
+      fileKey: ""
     }
   })
   const onSubmit = (data: CourseSchema) => {
@@ -123,13 +125,14 @@ const CourseCreateForm = () => {
                     <FieldLabel htmlFor="description">
                       Description
                     </FieldLabel>
-                    <Textarea
-                      {...field}
-                      id="description"
-                      className="min-h-[120px]"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="detailed description about the course"
-                    />
+                    <Editor value={field.value} onChange={field.onChange} />
+                    {/* <Textarea */}
+                    {/*   {...field} */}
+                    {/*   id="description" */}
+                    {/*   className="min-h-[120px]" */}
+                    {/*   aria-invalid={fieldState.invalid} */}
+                    {/*   placeholder="detailed description about the course" */}
+                    {/* /> */}
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
