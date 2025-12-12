@@ -20,7 +20,9 @@ const Editor = ({ value, onChange }: { value: string, onChange: (value: string) 
       onChange(JSON.stringify(editor.getJSON()))
     },
     content: value ? JSON.parse(value) : "<p>Write a detail here.....</p>",
+
   })
+  if (!editor) return null
   return (
     <div className="w-full border border-input rounded-lg overflow-hidden dark:bg-input/30">
       <MenuBar editor={editor} />

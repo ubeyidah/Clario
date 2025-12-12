@@ -126,13 +126,6 @@ const CourseCreateForm = () => {
                       Description
                     </FieldLabel>
                     <Editor value={field.value} onChange={field.onChange} />
-                    {/* <Textarea */}
-                    {/*   {...field} */}
-                    {/*   id="description" */}
-                    {/*   className="min-h-[120px]" */}
-                    {/*   aria-invalid={fieldState.invalid} */}
-                    {/*   placeholder="detailed description about the course" */}
-                    {/* /> */}
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
