@@ -42,7 +42,7 @@ export const RenderUploadingState = ({ progress, fileName }: { progress: number,
     <div className="flex justify-between w-full">
 
       <p className="text-xs text-foreground">Uploading...</p>
-      <p text-xs>{progress}%</p>
+      <p className="text-xs">{progress}%</p>
     </div>
     <Progress value={progress} className="h-1" />
 

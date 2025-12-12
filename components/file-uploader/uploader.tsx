@@ -59,7 +59,7 @@ const Uploader = () => {
         }
 
       } = await presignedUrlResponse.json()
-      console.log(presignedUrl, key) // LOG
+
       await new Promise<void>((res, rej) => {
         const xhr = new XMLHttpRequest()
         xhr.upload.onprogress = ((event) => {
@@ -96,11 +96,15 @@ const Uploader = () => {
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length) {
-      const file = acceptedFiles[0];
+      const file = acceptedFiles[0]
+      if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
+        URL.revokeObjectURL(fileState.objectUrl) // reset past url object to prevent from memory leak
+      }
       setFileState({ file, objectUrl: URL.createObjectURL(file), id: uuidv4(), progress: 0, uploading: false, error: false, imageType: "image", isDeleting: false, key: null })
       uploadFile(file)
     }
-  }, [])
+  }, [fileState.objectUrl])
+
   const rejectedFiles = (fileRejection: FileRejection[]) => {
     if (fileRejection.length) {
       const tooManyFiles = fileRejection.find(rejection => rejection.errors[0].code === "too-many-files")
