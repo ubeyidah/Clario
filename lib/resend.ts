@@ -1,3 +1,5 @@
+
+import "server-only"
 import { Resend } from 'resend';
 import { env } from './env';
 import { otpEmailTemplate } from './email/templates/otp-template';

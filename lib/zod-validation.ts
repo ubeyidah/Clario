@@ -15,3 +15,11 @@ export const courseSchema = z.object({
   status: z.enum(CourseStatus),
   fileKey: z.url({ message: "thumbnail url is required" })
 })
+
+
+export const fileUploadSchema = z.object({
+  fileName: z.string().min(1, "file name is required"),
+  contentType: z.string().min(1, "content type is required"),
+  size: z.number().min(1, "file size is required"),
+  isImage: z.boolean()
+})

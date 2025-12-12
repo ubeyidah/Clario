@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { COURSE_CATEGORIES } from "@/lib/constants"
 import { PlusIcon } from "lucide-react"
 import Editor from "@/components/text-editor/editor"
+import Uploader from "@/components/file-uploader/uploader"
 
 const CourseCreateForm = () => {
   const form = useForm({
@@ -139,12 +140,13 @@ const CourseCreateForm = () => {
                     <FieldLabel htmlFor="thumbnail">
                       Thumbnail Image
                     </FieldLabel>
-                    <Input
-                      {...field}
-                      id="thumbnail"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="thumbnail url"
-                    />
+                    <Uploader />
+                    {/* <Input */}
+                    {/*   {...field} */}
+                    {/*   id="thumbnail" */}
+                    {/*   aria-invalid={fieldState.invalid} */}
+                    {/*   placeholder="thumbnail url" */}
+                    {/* /> */}
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
