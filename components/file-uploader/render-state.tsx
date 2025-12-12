@@ -3,6 +3,7 @@ import { ImageIcon, UploadCloud, UploadCloudIcon, XIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import Image from "next/image"
 import { Progress } from "../ui/progress"
+import { Spinner } from "../ui/spinner"
 
 export const RenderEmptyState = ({ isActiveDrag }: { isActiveDrag: boolean }) => {
   return <div className="text-center flex flex-col items-center">
@@ -26,11 +27,14 @@ export const RenderErrorState = () => {
 }
 
 
-export const RenderUploadedState = ({ previewUrl }: { previewUrl: string }) => {
+export const RenderUploadedState = ({ previewUrl, handleRemoveFile, isDeleting }: { previewUrl: string, isDeleting: boolean, handleRemoveFile: () => void }) => {
   return <div>
     <Image src={previewUrl} alt="preivew of uploaded image" fill className="object-contain p-2 rounded-lg" />
-    <Button className="absolute top-2 right-2 size-8 p-0 rounded-full border-accent border hover:bg-white" type="button" variant={"ghost"} size={"icon"}>
-      <XIcon /> </Button>
+    <Button disabled={isDeleting} className="absolute top-2 right-2 size-8 p-0 rounded-full border-accent border hover:bg-white" type="button" onClick={handleRemoveFile} variant={"ghost"} size={"icon"}>
+      {
+        isDeleting ? <Spinner /> : <XIcon className="size-4" />
+      }
+    </Button>
   </div>
 }
 

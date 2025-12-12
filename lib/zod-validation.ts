@@ -23,3 +23,8 @@ export const fileUploadSchema = z.object({
   size: z.number().min(1, "file size is required"),
   isImage: z.boolean()
 })
+
+
+export const fileDeleteSchema = z.object({
+  key: z.string().min(1, "file key is required")
+})

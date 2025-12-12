@@ -94,6 +94,47 @@ const Uploader = () => {
     }
   }
 
+  const handleRemoveFile = async () => {
+    if (fileState.isDeleting || !fileState.objectUrl) return
+    try {
+      setFileState(prev => ({ ...prev, isDeleting: true }))
+      const res = await fetch("/api/s3/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ key: fileState.key })
+      })
+
+      if (!res.ok) {
+        toast.error("Failed to delete the file. Please try again.")
+        setFileState(prev => ({ ...prev, isDeleting: false, error: true }))
+        return;
+      }
+
+      if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
+        URL.revokeObjectURL(fileState.objectUrl) // reset past url object to prevent from memory leak
+      }
+
+      setFileState({
+        error: false,
+        file: null,
+        id: null,
+        imageType: "image",
+        isDeleting: false,
+        progress: 0,
+        objectUrl: null,
+        key: null,
+        uploading: false
+      })
+
+      toast.success("File deleted successfully.")
+    } catch {
+      toast.error("An error occurred while deleting the file. Please try again.")
+      setFileState(prev => ({ ...prev, isDeleting: false, error: true }))
+    }
+  }
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length) {
       const file = acceptedFiles[0]
@@ -131,7 +172,7 @@ const Uploader = () => {
       return <RenderErrorState />
     }
     if (fileState.objectUrl) {
-      return <RenderUploadedState previewUrl={fileState.objectUrl} />
+      return <RenderUploadedState previewUrl={fileState.objectUrl} handleRemoveFile={handleRemoveFile} isDeleting={fileState.isDeleting} />
     }
     return <RenderEmptyState isActiveDrag={isDragActive} />
   }
