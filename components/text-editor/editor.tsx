@@ -4,8 +4,9 @@ import starterKit from "@tiptap/starter-kit"
 import TextAlign from "@tiptap/extension-text-align"
 import Underline from "@tiptap/extension-underline"
 import MenuBar from "./menu-bar"
+import { cn } from "@/lib/utils"
 
-const Editor = ({ value, onChange }: { value: string, onChange: (value: string) => void }) => {
+const Editor = ({ value, onChange, invalid = false }: { value: string, invalid?: boolean, onChange: (value: string) => void }) => {
   const editor = useEditor({
     extensions: [starterKit, TextAlign.configure({
       types: ['heading', 'paragraph'],
@@ -13,7 +14,7 @@ const Editor = ({ value, onChange }: { value: string, onChange: (value: string) 
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "min-h-[300px] p-4 focus:outline-none prose prose-sm sm:prose !w-full !max-w-none dark:prose-invert"
+        class: cn({ "min-h-[300px] p-4 focus:outline-none prose prose-sm sm:prose !w-full !max-w-none dark:prose-invert": true, "border-red-400": invalid })
       }
     },
     onUpdate: ({ editor }) => {

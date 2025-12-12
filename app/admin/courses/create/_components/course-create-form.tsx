@@ -125,7 +125,7 @@ const CourseCreateForm = () => {
                     <FieldLabel htmlFor="description">
                       Description
                     </FieldLabel>
-                    <Editor value={field.value} onChange={field.onChange} />
+                    <Editor value={field.value} onChange={field.onChange} invalid={fieldState.invalid} />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
@@ -204,7 +204,7 @@ const CourseCreateForm = () => {
                         <SelectValue placeholder="Select level" />
                       </SelectTrigger>
                       <SelectContent position="item-aligned">
-                        {Object.entries(CourseLevel).map(([_, level]) => (
+                        {Object.entries(CourseLevel).map(([level]) => (
                           <SelectItem key={level} value={level}>
                             {level}
                           </SelectItem>
