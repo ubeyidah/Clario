@@ -140,13 +140,7 @@ const CourseCreateForm = () => {
                     <FieldLabel htmlFor="thumbnail">
                       Thumbnail Image
                     </FieldLabel>
-                    <Uploader />
-                    {/* <Input */}
-                    {/*   {...field} */}
-                    {/*   id="thumbnail" */}
-                    {/*   aria-invalid={fieldState.invalid} */}
-                    {/*   placeholder="thumbnail url" */}
-                    {/* /> */}
+                    <Uploader onChange={field.onChange} value={field.value} />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}

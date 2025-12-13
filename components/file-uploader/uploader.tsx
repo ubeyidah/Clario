@@ -18,8 +18,14 @@ interface UploaderState {
   objectUrl?: string | null,
   imageType: "image" | "video"
 }
+
+interface iAppProps {
+  value: string,
+  onChange: (value: string) => void
+}
+
 const maxFileSize = 5 * 1024 * 1024 // 5MB
-const Uploader = () => {
+const Uploader = ({ value, onChange }: iAppProps) => {
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
     file: null,
@@ -28,7 +34,7 @@ const Uploader = () => {
     isDeleting: false,
     progress: 0,
     objectUrl: null,
-    key: null,
+    key: value,
     uploading: false
   })
 
@@ -72,6 +78,8 @@ const Uploader = () => {
         xhr.onload = () => {
           if (xhr.status === 200 || xhr.status === 204) {
             setFileState(prev => ({ ...prev, progress: 100, uploading: false, key }))
+            onChange(key)
+            console.log(value + "from the key")
             toast.success("File uploaded successfully.")
             res()
           } else {
@@ -115,6 +123,7 @@ const Uploader = () => {
       if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
         URL.revokeObjectURL(fileState.objectUrl) // reset past url object to prevent from memory leak
       }
+      onChange("")
 
       setFileState({
         error: false,
@@ -124,7 +133,7 @@ const Uploader = () => {
         isDeleting: false,
         progress: 0,
         objectUrl: null,
-        key: null,
+        key: value,
         uploading: false
       })
 
