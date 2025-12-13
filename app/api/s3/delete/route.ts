@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/app/data/admin/require-admin"
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet"
 import { env } from "@/lib/env"
 import { S3 } from "@/lib/s3-client"
@@ -17,9 +18,11 @@ const aj = arcjet.withRule(detectBot({
 })) // in 1 minute max 5 requests
 
 export const DELETE = async (req: Request) => {
+  const session = await requireAdmin()
   try {
+
     const decision = await aj.protect(req, {
-      fingerprint: "lksfj"
+      fingerprint: session.user.id
     });
 
     if (decision.isDenied()) {
@@ -34,7 +37,7 @@ export const DELETE = async (req: Request) => {
           { status: 429 })
       } else {
         return NextResponse.json(
-          { success: "Forbidden", reason: decision.reason },
+          { success: false, message: "Forbidden", reason: decision.reason },
           { status: 403 },
         );
       }

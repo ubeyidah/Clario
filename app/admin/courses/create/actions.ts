@@ -1,14 +1,40 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/app/data/admin/require-admin";
+import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { ApiResponse, CourseSchema } from "@/lib/types";
 import { courseSchema } from "@/lib/zod-validation";
-import { headers } from "next/headers";
+import { request } from "@arcjet/next";
 
+
+const aj = arcjet.withRule(detectBot({
+  mode: "LIVE",
+  allow: []
+})).withRule(fixedWindow({
+  mode: "LIVE",
+  window: "1m",
+  max: 5
+})) // in 1 minute max 5 requests
 
 export const createCourseA = async (body: CourseSchema): Promise<ApiResponse> => {
+  const session = await requireAdmin()
   try {
+    const req = await request();
+    const decision = await aj.protect(req, {
+      fingerprint: session.user.id
+    })
+
+    if (decision.isDenied()) {
+      if (decision.reason.isBot()) {
+        return { success: false, message: "We detected automated or unusual activity.", }
+      } else if (decision.reason.isRateLimit()) {
+        return { success: false, message: "Please wait a few seconds before trying again.", }
+      } else {
+        return { success: false, message: "Forbidden" }
+      }
+    }
+
     const { success, data, error } = courseSchema.safeParse(body);
 
     if (!success) {
@@ -17,10 +43,6 @@ export const createCourseA = async (body: CourseSchema): Promise<ApiResponse> =>
         message: error.issues[0].message
       }
     }
-    const session = await auth.api.getSession({
-      headers: await headers()
-    })
-
     await prisma.course.create({
       data: {
         ...data, userId: session?.user.id as string

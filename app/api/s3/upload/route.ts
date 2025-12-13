@@ -6,6 +6,7 @@ import { NextResponse } from "next/server"
 import { v4 as uuidv4 } from "uuid"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet"
+import { requireAdmin } from "@/app/data/admin/require-admin"
 
 // SECUIRITY
 const aj = arcjet.withRule(detectBot({
@@ -19,9 +20,10 @@ const aj = arcjet.withRule(detectBot({
 
 const EXPIRES_IN = 360 // url expiresIn 6 min
 export const POST = async (req: Request) => {
+  const session = await requireAdmin()
   try {
     const decision = await aj.protect(req, {
-      fingerprint: "lksfj"
+      fingerprint: session.user.id
     });
 
     if (decision.isDenied()) {
@@ -36,7 +38,7 @@ export const POST = async (req: Request) => {
           { status: 429 })
       } else {
         return NextResponse.json(
-          { success: "Forbidden", reason: decision.reason },
+          { success: false, message: "Forbidden", reason: decision.reason },
           { status: 403 },
         );
       }
