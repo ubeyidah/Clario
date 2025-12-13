@@ -1,4 +1,4 @@
-"use state"
+"use client"
 import {
   InputGroup,
   InputGroupAddon,
@@ -11,18 +11,18 @@ import { useEffect, useState } from "react";
 import { Spinner } from "./spinner";
 
 interface iAppProps {
-  onChange: (value: string) => void;
-  value: string;
+  handleChange?: (value: string) => void;
+  value?: string;
   isLoading?: boolean;
   placeholder?: string;
 }
-const SearchBar = ({ onChange, value, isLoading = false, placeholder = "Search..." }: iAppProps) => {
+const SearchBar = ({ handleChange, value = "", isLoading = false, placeholder = "Search..." }: iAppProps) => {
   const [searchText, setSearchText] = useState(value);
-  const debouncedSearchText = useDebounce(searchText, 300);
+  const debouncedSearchText = useDebounce<string>(searchText, 300);
 
   useEffect(() => {
-    onChange(debouncedSearchText);
-  }, [debouncedSearchText, onChange]);
+    handleChange?.(debouncedSearchText);
+  }, [debouncedSearchText, handleChange]);
 
   const isTypeing = searchText !== debouncedSearchText;
   return (
@@ -36,7 +36,7 @@ const SearchBar = ({ onChange, value, isLoading = false, placeholder = "Search..
           size="icon-xs"
           onClick={() => {
             setSearchText("");
-            onChange("");
+            handleChange?.("");
           }}
         >
           <XIcon />

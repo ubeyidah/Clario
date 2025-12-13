@@ -1,28 +1,33 @@
+import { AdminCoursesType } from "@/app/data/admin/get-admin-courses"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
+import { useFileKeyToUrl } from "@/hooks/use-file-key-to-url"
+import { badgeClasses, courseStatusToVariant } from "@/lib/badge"
+import { cn, formatDuration, formatETB } from "@/lib/utils"
 import { Edit, Eye, Trash } from "lucide-react"
 import Image from "next/image"
 
 
 interface iAppProps {
   isFirst?: boolean
+  course: AdminCoursesType
 }
 
 
-const CourseCard = ({ isFirst }: iAppProps) => {
+const CourseCard = ({ course, isFirst }: iAppProps) => {
+  const thumbnailUrl = useFileKeyToUrl(course.fileKey)
   return (
-    <div className={cn("border-b group py-4 px-2 grid grid-cols-[200px_1fr] gap-4", isFirst && "border-t")}>
-      <div className="relative">
-        <Image src={"/dashboard.png"} width={200} height={100} alt="thumbnail image" className="aspect-video rounded-xl" />
-        <p className="absolute bottom-2 px-2 py-0.5 rounded-md right-2 text-sm bg-background/50 backdrop-blur-3xl">2:00</p>
+    <div className={cn("border-b group py-4 px-2 hover:bg-card/50 transition-colors duration-300 grid grid-cols-[200px_1fr] gap-4", isFirst && "border-t")}>
+      <div className="relative rounded-xl bg-linear-to-bl from-neutral-100/30 via-neutral-50/30 to-neutral-100/30 overflow-hidden">
+        <Image src={thumbnailUrl} width={200} height={100} alt="thumbnail image" className="aspect-video rounded-xl" loading="lazy" />
+        <p className="absolute bottom-2 px-2 py-0.5 rounded-md right-2 text-sm bg-background/50 backdrop-blur-3xl">{formatDuration(course.duration)}</p>
       </div>
       <div className="flex flex-col justify-between relative">
-        <div className="absolute top-0 right-2 text-xs uppercase text-green-600 bg-green-800/20 px-2 py-1 rounded-md">Published</div>
+        <div className={badgeClasses(courseStatusToVariant(course.status), "absolute top-0 right-2")}>{course.status}</div>
         <div>
-          <h1 className="text-lg font-bold">AWS S3 Mastery: Store, Secure, and Scale Files in the Cloud</h1>
-          <p className="text-muted-foreground line-clamp-2">Learn how to use Amazon S3 to store files, manage access, and build scalable cloud storage for real applications. earn how to use Amazon S3 to store files, manage access,</p>
+          <h1 className="text-lg font-bold">{course.title}</h1>
+          <p className="text-muted-foreground line-clamp-2">{course.shortDescription}</p>
           <div className="absolute bottom-2 right-2 gap-2 flex opacity-0 translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
             <TooltipProvider>
               <Tooltip>
@@ -62,8 +67,8 @@ const CourseCard = ({ isFirst }: iAppProps) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <p className="uppercase text-green-600 bg-green-800/20 px-3 py-0.5 rounded-xl text-sm">ETB 3,000</p>
-          <Badge variant={"secondary"}>Development</Badge>
+          <p className="uppercase text-green-600 bg-green-800/20 px-3 py-0.5 rounded-xl text-sm">{formatETB(course.price)}</p>
+          <Badge variant={"secondary"}>{course.category}</Badge>
         </div>
       </div>
 
