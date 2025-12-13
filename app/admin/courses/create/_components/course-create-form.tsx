@@ -1,5 +1,5 @@
 "use client"
-import { CourseLevel } from "@/lib/generated/prisma/enums"
+import { CourseLevel, CourseStatus } from "@/lib/generated/prisma/enums"
 import { CourseSchema } from "@/lib/types"
 import { courseSchema, COURSE_CATEGORIES_ENUM } from "@/lib/zod-validation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -255,6 +255,37 @@ const CourseCreateForm = () => {
                 )}
               />
 
+              <Controller name="status" control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className="col-span-2" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="status">
+                      Status
+                    </FieldLabel>
+                    <Select
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger
+                        id="status"
+                        aria-invalid={fieldState.invalid}
+                      >
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent position="item-aligned">
+                        {Object.entries(CourseStatus).map(([status]) => (
+                          <SelectItem key={status} value={status}>
+                            {status}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
             </FieldGroup>
           </FieldSet>
         </FieldGroup>
