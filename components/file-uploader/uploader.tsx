@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from './render-state'
 import { toast } from 'sonner'
 import { v4 as uuidv4 } from "uuid"
+import { useFileKeyToUrl } from '@/hooks/use-file-key-to-url'
 
 interface UploaderState {
   id: string | null,
@@ -27,6 +28,7 @@ interface iAppProps {
 
 const maxFileSize = 5 * 1024 * 1024 // 5MB
 const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
+  const fileUrl = useFileKeyToUrl(value || "")
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
     file: null,
@@ -34,9 +36,9 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
     imageType: "image",
     isDeleting: false,
     progress: 0,
-    objectUrl: null,
     key: value,
-    uploading: false
+    uploading: false,
+    objectUrl: value ? fileUrl : null
   })
 
   const uploadFile = useCallback(async (file: File) => {

@@ -1,7 +1,7 @@
 "use client"
 import { CourseLevel, CourseStatus } from "@/lib/generated/prisma/enums"
 import { CourseSchema } from "@/lib/types"
-import { courseSchema, COURSE_CATEGORIES_ENUM } from "@/lib/zod-validation"
+import { courseSchema } from "@/lib/zod-validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import {
@@ -24,32 +24,38 @@ import Editor from "@/components/text-editor/editor"
 import Uploader from "@/components/file-uploader/uploader"
 import { useTransition } from "react"
 import { tryCatch } from "@/hooks/try-catch"
-import { createCourseA } from "../actions"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { useRouter } from "next/navigation"
+import { updateCourseA } from "../actions"
+import { Course } from "@/lib/generated/prisma/client"
 
-const CourseCreateForm = () => {
+interface iAppProps {
+  courseId: string,
+  course: Course
+}
+
+const CourseEditForm = ({ courseId, course }: iAppProps) => {
   const form = useForm({
     resolver: zodResolver(courseSchema),
     defaultValues: {
-      title: '',
-      category: COURSE_CATEGORIES_ENUM[0],
-      description: '',
-      duration: "",
-      level: "Beginner",
-      price: "",
-      shortDescription: '',
-      slug: '',
-      status: "Draft",
-      fileKey: ""
+      title: course.title,
+      category: course.category as CourseSchema["category"],
+      description: course.description,
+      duration: course.duration,
+      level: course.level,
+      price: course.price,
+      shortDescription: course.shortDescription,
+      slug: course.slug,
+      status: course.status,
+      fileKey: course.fileKey
     }
   })
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const onSubmit = (data: CourseSchema) => {
     startTransition(async () => {
-      const { data: result, error } = await tryCatch(createCourseA(data))
+      const { data: result, error } = await tryCatch(updateCourseA(courseId, data))
       if (error) {
         toast.error("An unexpected error occurred.")
         return;
@@ -64,20 +70,18 @@ const CourseCreateForm = () => {
       }
     })
   }
+
   const generateSlug = () => {
     const title = form.getValues("title")
     const slug = slugify(title)
     form.setValue("slug", slug, { shouldValidate: true })
   }
+
   return (
     <>
       <form className="max-w-3xl mx-auto py-8 pb-20" id="course-create-form" onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
           <FieldSet>
-            <FieldLegend className="text-2xl!">Create Course</FieldLegend>
-            <FieldDescription >
-              Provide basic information about your course.
-            </FieldDescription>
             <FieldGroup>
               <Controller name="title" control={form.control}
                 render={({ field, fieldState }) => (
@@ -311,11 +315,11 @@ const CourseCreateForm = () => {
           </FieldSet>
         </FieldGroup>
         <Button disabled={isPending} type="submit" className="mt-8">{
-          isPending ? <>Creating... <Spinner /> </> : <>Create Course <PlusIcon /></>
+          isPending ? <>Updating... <Spinner /> </> : <>Update Course <PlusIcon /></>
         } </Button>
       </form>
     </>
   )
 }
 
-export default CourseCreateForm
+export default CourseEditForm;

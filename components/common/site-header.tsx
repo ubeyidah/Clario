@@ -21,8 +21,18 @@ export function SiteHeader({ children }: { children?: ReactNode }) {
     ? pathname.slice(BASE.length)
     : pathname
   const segments = relative.split("/").filter(Boolean)
-  const formatWord = (str: string) =>
-    str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, " ")
+  const formatWord = (str: string) => {
+    const cleaned = str.replace(/-/g, " ")
+    const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
+
+    // truncate long params (ids, slugs, hashes, etc.)
+    const MAX_LENGTH = 10
+    if (capitalized.length > MAX_LENGTH) {
+      return capitalized.slice(0, 8) + "..."
+    }
+
+    return capitalized
+  }
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">

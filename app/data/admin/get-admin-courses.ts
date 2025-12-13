@@ -1,5 +1,4 @@
-"use server"
-
+import "server-only"
 import { prisma } from "@/lib/db"
 import { requireAdmin } from "./require-admin"
 
@@ -22,3 +21,5 @@ export const getAdminCourses = async () => {
 
 
 export type AdminCoursesType = Awaited<ReturnType<typeof getAdminCourses>>[0]
+
+

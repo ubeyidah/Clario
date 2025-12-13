@@ -19,14 +19,14 @@ interface iAppProps {
 const CourseCard = ({ course, isFirst }: iAppProps) => {
   const thumbnailUrl = useFileKeyToUrl(course.fileKey)
   return (
-    <div className={cn("border-b group py-4 px-2 hover:bg-card/30 transition-colors duration-300 grid grid-cols-[200px_1fr] gap-4", isFirst && "border-t")}>
+    <div className={cn("border-b group py-4 px-2 hover:bg-card/30 transition-colors duration-300 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4", isFirst && "border-t")}>
       <div className="relative rounded-xl bg-linear-to-bl from-neutral-100/30 via-neutral-50/30 to-neutral-100/30 overflow-hidden">
         <Link href={`/admin/courses/${course.id}`}>
-          <Image src={thumbnailUrl} width={200} height={100} alt="thumbnail image" className="aspect-video rounded-xl" loading="lazy" />
+          <Image src={thumbnailUrl} width={200} height={100} alt="thumbnail image" className="aspect-video max-md:w-full rounded-xl" loading="lazy" />
         </Link>
         <p className="absolute bottom-2 px-2 py-0.5 rounded-md right-2 text-sm bg-background/50 backdrop-blur-3xl">{formatDuration(course.duration)}</p>
       </div>
-      <div className="flex flex-col justify-between relative">
+      <div className="flex flex-col justify-between max-md:gap-4 relative max-md:pb-4">
         <div className={badgeClasses(courseStatusToVariant(course.status), "absolute top-0 right-2")}>{course.status}</div>
         <div>
           <Link href={`/admin/courses/${course.id}`} className="text-lg font-bold hover:underline">{course.title}</Link>
