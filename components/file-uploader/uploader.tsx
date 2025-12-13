@@ -22,10 +22,11 @@ interface UploaderState {
 interface iAppProps {
   value: string,
   onChange: (value: string) => void
+  invalid?: boolean
 }
 
 const maxFileSize = 5 * 1024 * 1024 // 5MB
-const Uploader = ({ value, onChange }: iAppProps) => {
+const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
     file: null,
@@ -38,7 +39,7 @@ const Uploader = ({ value, onChange }: iAppProps) => {
     uploading: false
   })
 
-  async function uploadFile(file: File) {
+  const uploadFile = useCallback(async (file: File) => {
     setFileState(prev => ({ ...prev, progress: 0, uploading: true }))
     try {
       const presignedUrlResponse = await fetch('/api/s3/upload', {
@@ -79,7 +80,6 @@ const Uploader = ({ value, onChange }: iAppProps) => {
           if (xhr.status === 200 || xhr.status === 204) {
             setFileState(prev => ({ ...prev, progress: 100, uploading: false, key }))
             onChange(key)
-            console.log(value + "from the key")
             toast.success("File uploaded successfully.")
             res()
           } else {
@@ -100,7 +100,7 @@ const Uploader = ({ value, onChange }: iAppProps) => {
       toast.error("An error occurred during file upload. try again")
       setFileState(prev => ({ ...prev, error: true, uploading: false, progress: 0 }))
     }
-  }
+  }, [onChange])
 
   const handleRemoveFile = async () => {
     if (fileState.isDeleting || !fileState.objectUrl) return
@@ -153,7 +153,7 @@ const Uploader = ({ value, onChange }: iAppProps) => {
       setFileState({ file, objectUrl: URL.createObjectURL(file), id: uuidv4(), progress: 0, uploading: false, error: false, imageType: "image", isDeleting: false, key: null })
       uploadFile(file)
     }
-  }, [fileState.objectUrl])
+  }, [uploadFile, fileState.objectUrl])
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {
     if (fileRejection.length) {
@@ -186,7 +186,7 @@ const Uploader = ({ value, onChange }: iAppProps) => {
     return <RenderEmptyState isActiveDrag={isDragActive} />
   }
   return (
-    <Card {...getRootProps()} className={cn("relative border-2 bg-input/20 p-4 border-dashed transition-colors duration-200 ease-in-out w-full h-64", isDragActive ? "border-green-500 bg-green-500/5" : "border-border hover:border-primary")}>
+    <Card {...getRootProps()} className={cn("relative border-2 bg-input/20 p-4 border-dashed transition-colors duration-200 ease-in-out w-full h-64 hover:border-primary", isDragActive && "border-green-500 bg-green-500/5", invalid && "border-destructive hover:border-primary")}>
       <CardContent className='flex items-center justify-center h-full w-full'>
         <input {...getInputProps()} />
         {renderContnet()}

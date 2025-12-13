@@ -13,7 +13,7 @@ export const courseSchema = z.object({
   shortDescription: z.string().min(6, 'Short description must be at least 6 characters long').max(255, 'Short description cannot exceed 255 characters'),
   slug: z.string().min(3, 'Slug must be at least 3 characters long'), // TODO: validate slug is valid with regex 
   status: z.enum(CourseStatus),
-  fileKey: z.string({ message: "thumbnail url is required" })
+  fileKey: z.string().min(3, "thumbnail url is required")
 })
 
 

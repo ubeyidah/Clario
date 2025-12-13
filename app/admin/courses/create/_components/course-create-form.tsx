@@ -140,7 +140,7 @@ const CourseCreateForm = () => {
                     <FieldLabel htmlFor="thumbnail">
                       Thumbnail Image
                     </FieldLabel>
-                    <Uploader onChange={field.onChange} value={field.value} />
+                    <Uploader onChange={field.onChange} value={field.value} invalid={fieldState.invalid} />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}

@@ -14,7 +14,7 @@ const Editor = ({ value, onChange, invalid = false }: { value: string, invalid?:
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: cn({ "min-h-[300px] p-4 focus:outline-none prose prose-sm sm:prose !w-full !max-w-none dark:prose-invert": true, "border-red-400": invalid })
+        class: "min-h-[300px] p-4 focus:outline-none prose prose-sm sm:prose !w-full !max-w-none dark:prose-invert"
       }
     },
     onUpdate: ({ editor }) => {
@@ -25,7 +25,7 @@ const Editor = ({ value, onChange, invalid = false }: { value: string, invalid?:
   })
   if (!editor) return null
   return (
-    <div className="w-full border border-input rounded-lg overflow-hidden dark:bg-input/30">
+    <div className={cn("w-full border border-input rounded-lg overflow-hidden dark:bg-input/30", invalid && "border-destructive")}>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
     </div>
