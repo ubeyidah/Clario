@@ -22,6 +22,12 @@ import { COURSE_CATEGORIES } from "@/lib/constants"
 import { PlusIcon } from "lucide-react"
 import Editor from "@/components/text-editor/editor"
 import Uploader from "@/components/file-uploader/uploader"
+import { useTransition } from "react"
+import { tryCatch } from "@/hooks/try-catch"
+import { createCourseA } from "../actions"
+import { toast } from "sonner"
+import { Spinner } from "@/components/ui/spinner"
+import { useRouter } from "next/navigation"
 
 const CourseCreateForm = () => {
   const form = useForm({
@@ -39,9 +45,24 @@ const CourseCreateForm = () => {
       fileKey: ""
     }
   })
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const onSubmit = (data: CourseSchema) => {
-    console.log(data)
-
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(createCourseA(data))
+      if (error) {
+        toast.error("An unexpected error occurred.")
+        return;
+      }
+      if (result.success) {
+        toast.error(result.message)
+        form.reset()
+        router.push("/admin/courses")
+      } else if (result.success === false) {
+        toast.success(result.message)
+        return
+      }
+    })
   }
   const generateSlug = () => {
     const title = form.getValues("title")
@@ -289,7 +310,9 @@ const CourseCreateForm = () => {
             </FieldGroup>
           </FieldSet>
         </FieldGroup>
-        <Button type="submit" className="mt-8">Create Course <PlusIcon /> </Button>
+        <Button disabled={isPending} type="submit" className="mt-8">{
+          isPending ? <>Creating... <Spinner /> </> : <>Create Course <PlusIcon /></>
+        } </Button>
       </form>
     </>
   )
