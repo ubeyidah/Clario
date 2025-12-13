@@ -1,11 +1,11 @@
 import { AdminCoursesType } from "@/app/data/admin/get-admin-courses"
 import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useFileKeyToUrl } from "@/hooks/use-file-key-to-url"
 import { badgeClasses, courseStatusToVariant } from "@/lib/badge"
 import { cn, formatDuration, formatETB } from "@/lib/utils"
-import { Edit, Eye } from "lucide-react"
+import { Edit, Eye, Trash2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -51,10 +51,20 @@ const CourseCard = ({ course, isFirst }: iAppProps) => {
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>
-                  View Detail
+                  Preview
                 </TooltipContent>
               </Tooltip>
 
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm" className="cursor-pointer rounded-full text-destructive hover:text-destructive hover:bg-destructive/10">
+                    <Trash2 />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Delete
+                </TooltipContent>
+              </Tooltip>
             </TooltipProvider>
           </div>
         </div>
