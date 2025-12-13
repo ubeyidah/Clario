@@ -13,9 +13,9 @@ const aj = arcjet.withRule(detectBot({
   allow: []
 })).withRule(fixedWindow({
   mode: "LIVE",
-  window: "1m",
-  max: 5
-})) // in 1 minute max 5 requests
+  window: "5m",
+  max: 3
+})) // in 5 minute max 3 requests
 
 export const createCourseA = async (body: CourseSchema): Promise<ApiResponse> => {
   const session = await requireAdmin()
