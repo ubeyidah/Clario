@@ -54,19 +54,16 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
           isImage: true
         })
       })
-      if (!presignedUrlResponse.ok) {
-        toast.error("Failed to get upload URL.")
+
+      const result = await presignedUrlResponse.json()
+
+      if (!presignedUrlResponse.ok || result.success === false) {
+        toast.error(result.message || "Failed to get upload URL.")
         setFileState(prev => ({ ...prev, error: true, uploading: false, progress: 0 }))
         return
       }
-      const {
-        data: {
-          presignedUrl,
-          key
-        }
 
-      } = await presignedUrlResponse.json()
-
+      const { key, presignedUrl } = result.data;
       await new Promise<void>((res, rej) => {
         const xhr = new XMLHttpRequest()
         xhr.upload.onprogress = ((event) => {
