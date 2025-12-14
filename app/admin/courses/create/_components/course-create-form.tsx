@@ -55,11 +55,11 @@ const CourseCreateForm = () => {
         return;
       }
       if (result.success) {
-        toast.error(result.message)
+        toast.success(result.message)
         form.reset()
         router.push("/admin/courses")
       } else if (result.success === false) {
-        toast.success(result.message)
+        toast.error(result.message)
         return
       }
     })
