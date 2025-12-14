@@ -29,16 +29,16 @@ export const POST = async (req: Request) => {
     if (decision.isDenied()) {
       if (decision.reason.isBot()) {
         return NextResponse.json(
-          { success: false, message: "We detected automated or unusual activity.", reason: decision.reason },
+          { success: false, message: "We detected automated or unusual activity." },
           { status: 403 },
         );
       } else if (decision.reason.isRateLimit()) {
         return NextResponse.json(
-          { success: false, message: "Please wait a few seconds before trying again.", reason: decision.reason },
+          { success: false, message: "Please wait a few seconds before trying again." },
           { status: 429 })
       } else {
         return NextResponse.json(
-          { success: false, message: "Forbidden", reason: decision.reason },
+          { success: false, message: "Forbidden" },
           { status: 403 },
         );
       }
