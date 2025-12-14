@@ -12,13 +12,13 @@ export default function CTASection() {
             <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-primary text-white">
               <GraduationCap className="size-10" />
             </div>
-            
+
             <h2 className="text-balance mt-8 text-4xl font-semibold lg:text-5xl">
               Join the Learning Revolution
             </h2>
-            
+
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg">
-              Whether you're here to learn new skills or share your knowledge with others, 
+              Whether you&apos;re here to learn new skills or share your knowledge with others,
               Clario provides the tools and community you need to succeed.
             </p>
 
@@ -29,7 +29,7 @@ export default function CTASection() {
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
-              
+
               <Button variant="outline" size="lg" className="gap-2" asChild>
                 <Link href="/courses">
                   <Users className="size-4" />
@@ -56,7 +56,7 @@ export default function CTASection() {
 
           <div className="mt-12">
             <p className="text-muted-foreground text-sm">
-              Ready to transform your learning experience? 
+              Ready to transform your learning experience?
               <Link href="/sign-in" className="text-primary ml-1 hover:underline">
                 Start your journey today →
               </Link>

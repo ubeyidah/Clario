@@ -53,8 +53,8 @@ export default function ProblemSection() {
           <div className="mt-16 rounded-2xl bg-muted/30 p-8 text-center">
             <h3 className="text-2xl font-semibold">The Cost of Poor Learning Experiences</h3>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">
-              When learning platforms fail, students lose motivation, instructors waste time on administrative tasks, 
-              and organizations struggle to achieve their educational goals. We're here to change that.
+              When learning platforms fail, students lose motivation, instructors waste time on administrative tasks,
+              and organizations struggle to achieve their educational goals. We&apos;re here to change that.
             </p>
           </div>
         </div>

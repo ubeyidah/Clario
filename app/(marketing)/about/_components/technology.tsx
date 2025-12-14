@@ -6,7 +6,7 @@ import { Code, Lock, Globe, Sparkles } from 'lucide-react'
 export default function TechnologySection() {
   const techStack = [
     "Next.js 16",
-    "React 19", 
+    "React 19",
     "TypeScript",
     "Tailwind CSS",
     "Prisma",
@@ -54,7 +54,7 @@ export default function TechnologySection() {
                 Powered by modern tools that deliver exceptional performance and reliability.
               </p>
             </div>
-            
+
             <div className="mt-8 flex flex-wrap justify-center gap-2">
               {techStack.map((tech) => (
                 <Badge key={tech} variant="secondary" className="px-3 py-1">
@@ -81,7 +81,7 @@ export default function TechnologySection() {
           <div className="mt-16 rounded-2xl bg-primary/5 p-8 text-center">
             <h3 className="text-2xl font-semibold">Open to Feedback</h3>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl">
-              We're constantly improving based on user feedback and emerging technologies. 
+              We&apos;re constantly improving based on user feedback and emerging technologies.
               Clario evolves with the needs of our learning community.
             </p>
           </div>

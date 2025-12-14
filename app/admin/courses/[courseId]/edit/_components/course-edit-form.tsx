@@ -6,11 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSet,
 } from "@/components/ui/field"
 import slugify from "slugify"

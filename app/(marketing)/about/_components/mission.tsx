@@ -9,7 +9,7 @@ export default function MissionSection() {
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-balance text-4xl font-semibold lg:text-5xl">Our Mission</h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-            We're on a mission to transform education through technology that puts learning first, not complexity.
+            We&apos;re on a mission to transform education through technology that puts learning first, not complexity.
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export default function MissionSection() {
               </div>
               <h3 className="mt-6 text-xl font-semibold">Drive Innovation</h3>
               <p className="text-muted-foreground mt-3">
-                We're constantly pushing the boundaries of what's possible in online education, one feature at a time.
+                We&apos;re constantly pushing the boundaries of what&apos;s possible in online education, one feature at a time.
               </p>
             </CardContent>
           </Card>
@@ -53,7 +53,7 @@ export default function MissionSection() {
 
         <div className="mt-16 text-center">
           <blockquote className="text-muted-foreground mx-auto max-w-3xl text-lg italic">
-            "Education is not the filling of a pail, but the lighting of a fire. We're here to provide the match."
+            &quot;Education is not the filling of a pail, but the lighting of a fire. We&apos;re here to provide the match.&quot;
           </blockquote>
           <p className="text-muted-foreground mt-4 text-sm">— Our guiding principle</p>
         </div>
