@@ -22,7 +22,8 @@ const SearchBar = ({ handleChange, value = "", isLoading = false, placeholder = 
 
   useEffect(() => {
     handleChange?.(debouncedSearchText);
-  }, [debouncedSearchText, handleChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchText]);
 
   const isTypeing = searchText !== debouncedSearchText;
   return (
