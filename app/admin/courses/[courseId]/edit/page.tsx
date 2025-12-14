@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tabs";
 import CourseEditForm from "./_components/course-edit-form";
 import { truncateText } from "@/lib/utils";
+import { timeAgo } from "@/lib/date";
 
 
 type Params = Promise<{ courseId: string }>
@@ -18,7 +19,7 @@ const EditCoursePage = async ({ params }: { params: Params }) => {
   const course = await getAdminCourse(courseId);
   return (
     <div>
-      <SiteHeader>Edit Course</SiteHeader>
+      <SiteHeader><span className="font-mono text-sm">last updated {timeAgo(course.updatedAt)}</span></SiteHeader>
       <div className="p-4 md:p-6 mt-5">
         <div>
           <Tabs defaultValue="basic-info">
@@ -50,7 +51,7 @@ const EditCoursePage = async ({ params }: { params: Params }) => {
 
               <h3 className="truncate text-lg font-semibold"><span className="text-yellow-700 bg-yellow-600/10 rounded-md px-2 py-1">Edit</span> {truncateText(course.title, 40)}</h3>
             </div>
-            <TabsContent value="basic-info" className="pt-4">
+            <TabsContent value="basic-info">
               <CourseEditForm courseId={courseId} course={course} />
             </TabsContent>
             <TabsContent value="course-strucutre">course Structutre</TabsContent>
