@@ -1,3 +1,4 @@
+import "server-only"
 import { Resend } from 'resend';
 import { env } from './env';
 import { otpEmailTemplate } from './email/templates/otp-template';
@@ -10,11 +11,13 @@ export const sendOtpEmail = async (email: string, otp: string) => {
     return; // skip sending real email
   }
   const name = email.split("@")[0];
-  await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: 'Clario LMS <onboarding@resend.dev>',
     to: [email],
     subject: "Your Clario LMS Sign-In Code",
     html: otpEmailTemplate({ otp, userName: name }),
   });
-
+  if (error) {
+    throw new Error(`Failed to send OTP email: ${error.message}`);
+  }
 }
