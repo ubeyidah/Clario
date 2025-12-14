@@ -12,6 +12,23 @@ import {
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+
+function isSidebarItemActive(itemUrl: string, pathname: string) {
+  if (itemUrl === "/admin") {
+    return pathname === "/admin";
+  }
+
+  if (itemUrl === "/admin/courses") {
+    return (
+      pathname.startsWith("/admin/courses") &&
+      !pathname.startsWith("/admin/courses/create")
+    );
+  }
+
+  return pathname.startsWith(itemUrl);
+}
+
+
 export function NavMain({
   items,
 }: {
@@ -27,8 +44,7 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => {
-            const isActive = item.url != "/admin" ? pathname.startsWith(item.url) : pathname === "/admin"
-
+            const isActive = isSidebarItemActive(item.url, pathname)
             return <SidebarMenuItem key={item.title}>
               <SidebarMenuButton tooltip={item.title} asChild isActive={isActive}>
                 <Link href={item.url}>
