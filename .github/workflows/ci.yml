@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js 25
-        uses: actions/setup-node@v3
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
         with:
           node-version: 25
           cache: "pnpm"
@@ -29,6 +29,8 @@ jobs:
         run: pnpm install
 
       - name: Generate Prisma Client
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_db # Note: This is a placeholder URL for type generation only; CI doesn't need a real database connection for client generation.
         run: pnpm db:generate
 
       - name: Lint
