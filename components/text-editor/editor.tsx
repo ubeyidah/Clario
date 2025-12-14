@@ -20,7 +20,14 @@ const Editor = ({ value, onChange, invalid = false }: { value: string, invalid?:
     onUpdate: ({ editor }) => {
       onChange(JSON.stringify(editor.getJSON()))
     },
-    content: value ? JSON.parse(value) : "<p>Write a detail here.....</p>",
+    content: (() => {
+      if (!value) return "<p>Write a detail here.....</p>"
+      try {
+        return JSON.parse(value)
+      } catch {
+        return "<p>Write a detail here.....</p>"
+      }
+    })(),
 
   })
   if (!editor) return null
