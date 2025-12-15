@@ -12,5 +12,7 @@ export const env = defineEnv({
   AWS_ENDPOINT_URL_S3: z.url(),
   AWS_ENDPOINT_URL_IAM: z.url(),
   AWS_REGION: z.string(),
-  NEXT_PUBLIC_S3_BUCKET_NAME_IMG: z.string()
+  NEXT_PUBLIC_S3_BUCKET_NAME_IMG: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string()
 })
