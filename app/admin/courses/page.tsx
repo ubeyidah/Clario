@@ -6,6 +6,7 @@ import { COURSE_CATEGORIES } from "@/lib/constants";
 import Link from "next/link";
 import CourseCard from "./_components/course-card";
 import { getAdminCourses } from "@/app/data/admin/get-admin-courses";
+import { EmptyCourse } from "./_components/course-empty";
 
 const CoursesPage = async () => {
   const courses = await getAdminCourses();
@@ -38,7 +39,7 @@ const CoursesPage = async () => {
 
         <div className="mt-6">
           {
-            courses.map((course, i) => <CourseCard course={course} key={course.id} isFirst={i == 0} />)
+            courses.length ? courses.map((course, i) => <CourseCard course={course} key={course.id} isFirst={i == 0} />) : <EmptyCourse />
           }
         </div>
       </div>
