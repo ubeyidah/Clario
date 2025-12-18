@@ -25,12 +25,9 @@ jobs:
           echo "$(npm bin -g)" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: pnpm install
-
-      - name: Generate Prisma Client
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_db # Note: This is a placeholder URL for type generation only; CI doesn't need a real database connection for client generation.
-        run: pnpm db:generate
+        run: pnpm install
 
       - name: Lint
         run: pnpm lint
