@@ -10,8 +10,8 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, MoreVertical } from "lucide-react";
 import Link from "next/link";
-import { ReactNode, useState } from "react"
-import { reorderLessonsA } from "../actions";
+import { ReactNode, useEffect, useState } from "react"
+import { reorderChaptersA, reorderLessonsA } from "../actions";
 import { toast } from "sonner";
 
 
@@ -44,6 +44,23 @@ const CourseStructure = ({ data }: iAppProps) => {
     }))
   })) || [];
   const [items, setItems] = useState(initialItems)
+  useEffect(() => {
+    setItems(prev => {
+      const updatedItems = data.chapters.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        order: chapter.position,
+        isOpen: prev.find(item => item.id === chapter.id)?.isOpen ?? true,
+        lessons: chapter.lessons.map(lesson => ({
+          id: lesson.id,
+          order: lesson.position,
+          title: lesson.title
+        }))
+      })) || []
+      return updatedItems
+    })
+  }, [data])
+
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -102,8 +119,22 @@ const CourseStructure = ({ data }: iAppProps) => {
       const updatedChaptersForState = reordedChapters.map((chapter, index) => ({ ...chapter, order: index++ }))
       const backupState = [...items]
       setItems(updatedChaptersForState)
+      if (courseId) {
+        const chaptersToUpdate = updatedChaptersForState.map(chapter => ({ id: chapter.id, position: chapter.order }))
+        const lessonsReorderPromise = () => reorderChaptersA(courseId, chaptersToUpdate)
+        toast.promise(lessonsReorderPromise, {
+          loading: "Reordering chapters...",
+          success: (result) => {
+            if (result.success) return result.message;
+            throw new Error(result.message);
+          },
+          error: (err) => {
+            setItems(backupState)
+            return `Failed to reorder chapters: ${err.message}`;
+          }
+        })
 
-      // TODO: muate the reordering to the db
+      }
     }
 
 

@@ -85,3 +85,26 @@ export const reorderLessonsA = async (courseId: string, lessons: { id: string, p
   }
 }
 
+export const reorderChaptersA = async (courseId: string, chapters: { id: string, position: number }[]): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+
+    if (!chapters || chapters.length == 0) return {
+      success: false,
+      message: "No chapters to reorder"
+    }
+    const updates = chapters.map(chapter => prisma.chapter.update({ where: { id: chapter.id, courseId }, data: { position: chapter.position } }))
+
+    await prisma.$transaction(updates)
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+    return {
+      message: "chapters reordered successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
