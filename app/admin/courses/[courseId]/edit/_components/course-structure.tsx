@@ -11,6 +11,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { ReactNode, useState } from "react"
+import { reorderLessonsA } from "../actions";
+import { toast } from "sonner";
 
 
 interface iAppProps {
@@ -123,7 +125,21 @@ const CourseStructure = ({ data }: iAppProps) => {
       newItems[chapterIndex] = { ...chapterToUpdate, lessons: updatedLessonsForState }
       const buackupItems = [...items]
       setItems(newItems)
-      // TODO: muate the reordering to the db
+      if (courseId) {
+        const lessonsToUpdate = updatedLessonsForState.map(lesson => ({ id: lesson.id, position: lesson.order }))
+        const lessonsReorderPromise = () => reorderLessonsA(courseId, lessonsToUpdate, chapterId)
+        toast.promise(lessonsReorderPromise, {
+          loading: "Reordering lessons...",
+          success: (result) => {
+            if (result.success) return result.message;
+            throw new Error(result.message);
+          },
+          error: (err) => {
+            setItems(buackupItems)
+            return `Failed to reorder lessons: ${err.message}`;
+          }
+        })
+      }
     }
 
   }

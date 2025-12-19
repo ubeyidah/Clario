@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db"
 import { ApiResponse, CourseSchema } from "@/lib/types"
 import { courseSchema } from "@/lib/zod-validation"
 import { request } from "@arcjet/next"
+import { revalidatePath } from "next/cache"
 
 const aj = arcjet.withRule(detectBot({
   mode: "LIVE",
@@ -57,3 +58,30 @@ export const updateCourseA = async (id: string, body: CourseSchema): Promise<Api
     }
   }
 }
+
+
+
+export const reorderLessonsA = async (courseId: string, lessons: { id: string, position: number }[], chapterId: string): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+
+    if (!lessons || lessons.length == 0) return {
+      success: false,
+      message: "No lessons to reorder"
+    }
+    const updates = lessons.map(lesson => prisma.lesson.update({ where: { id: lesson.id, chapterId }, data: { position: lesson.position } }))
+
+    await prisma.$transaction(updates)
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+    return {
+      message: "lessons reordered successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
