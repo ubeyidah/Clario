@@ -57,7 +57,7 @@ const EditCoursePage = async ({ params }: { params: Params }) => {
               <CourseEditForm courseId={courseId} course={course} />
             </TabsContent>
             <TabsContent value="course-strucutre">
-              <CourseStructure />
+              <CourseStructure data={course} />
             </TabsContent>
           </Tabs>
         </div>
