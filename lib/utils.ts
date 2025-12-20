@@ -24,7 +24,7 @@ export function formatDuration(value: number): string {
   const totalMinutes = value < 1 ? Math.round(value * 100) : value * 60
   const hours = Math.floor(totalMinutes / 60)
   const minutes = Math.round(totalMinutes % 60)
-  return `${hours}:${minutes.toString().padStart(2, '0')}`
+  return `${hours}:${minutes.toString().padStart(2, '0')}:00`
 }
 
 export function truncateText(text: string, maxLength = 20): string {
