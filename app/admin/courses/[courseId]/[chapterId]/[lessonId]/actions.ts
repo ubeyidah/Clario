@@ -29,7 +29,7 @@ export const updateLesson = async (body: LessonSchema, lessonId: string): Promis
     })
 
     return {
-      success: false,
+      success: true,
       message: "lesson updated successfully"
     }
 
