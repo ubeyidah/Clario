@@ -44,7 +44,7 @@ const EditCoursePage = async ({ params }: { params: Params }) => {
                     aria-hidden="true"
                     size={16}
                   />
-                  Course Structutre
+                  Course Structure
                 </TabsTrigger>
               </TabsList>
 
