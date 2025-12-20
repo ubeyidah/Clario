@@ -26,11 +26,11 @@ import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { useRouter } from "next/navigation"
 import { updateCourseA } from "../actions"
-import { Course } from "@/lib/generated/prisma/client"
+import { AdminCourseType } from "@/app/data/admin/get-admin-course"
 
 interface iAppProps {
   courseId: string,
-  course: Course
+  course: AdminCourseType
 }
 
 const CourseEditForm = ({ courseId, course }: iAppProps) => {

@@ -3,9 +3,10 @@
 import { requireAdmin } from "@/app/data/admin/require-admin"
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet"
 import { prisma } from "@/lib/db"
-import { ApiResponse, CourseSchema } from "@/lib/types"
-import { courseSchema } from "@/lib/zod-validation"
+import { ApiResponse, CourseSchema, ChapterSchema, LessonSchema } from "@/lib/types"
+import { chapterSchema, courseSchema, lessonSchema } from "@/lib/zod-validation"
 import { request } from "@arcjet/next"
+import { revalidatePath } from "next/cache"
 
 const aj = arcjet.withRule(detectBot({
   mode: "LIVE",
@@ -51,6 +52,234 @@ export const updateCourseA = async (id: string, body: CourseSchema): Promise<Api
       success: true
     }
   } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+
+
+export const reorderLessonsA = async (courseId: string, lessons: { id: string, position: number }[], chapterId: string): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+
+    if (!lessons || lessons.length == 0) return {
+      success: false,
+      message: "No lessons to reorder"
+    }
+    const updates = lessons.map(lesson => prisma.lesson.update({ where: { id: lesson.id, chapterId }, data: { position: lesson.position } }))
+
+    await prisma.$transaction(updates)
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+    return {
+      message: "lessons reordered successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+export const reorderChaptersA = async (courseId: string, chapters: { id: string, position: number }[]): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+
+    if (!chapters || chapters.length == 0) return {
+      success: false,
+      message: "No chapters to reorder"
+    }
+    const updates = chapters.map(chapter => prisma.chapter.update({ where: { id: chapter.id, courseId }, data: { position: chapter.position } }))
+
+    await prisma.$transaction(updates)
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+    return {
+      message: "chapters reordered successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+
+
+
+export const createChapterA = async (body: ChapterSchema): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+    const { data, success, error } = chapterSchema.safeParse(body);
+    if (!success) {
+      return {
+        message: error.issues[0].message,
+        success: false
+      }
+    }
+
+    const { courseId, name } = data;
+    await prisma.$transaction(async (tx) => {
+      const maxPosition = await tx.chapter.findFirst({ where: { courseId }, select: { position: true }, orderBy: { position: 'desc' } })
+      await tx.chapter.create({
+        data: {
+          title: name,
+          courseId,
+          position: (maxPosition?.position || 0) + 1
+        }
+      })
+    })
+
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+
+    return {
+      message: "chapters created successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+
+
+export const createLessonA = async (body: LessonSchema): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+    const { data, success, error } = lessonSchema.safeParse(body);
+    if (!success) {
+      return {
+        message: error.issues[0].message,
+        success: false
+      }
+    }
+
+    const { courseId, name, chapterId } = data;
+    await prisma.$transaction(async (tx) => {
+      const maxPosition = await tx.lesson.findFirst({ where: { chapterId }, select: { position: true }, orderBy: { position: 'desc' } })
+      await tx.lesson.create({
+        data: {
+          title: name,
+          chapterId,
+          position: (maxPosition?.position || 0) + 1
+        }
+      })
+    })
+
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+
+    return {
+      message: "lesson created successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+
+
+export const deleteChapterA = async ({ chapterId, courseId }: { chapterId: string, courseId: string }): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+    const courseWithChapters = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: {
+        chapters: {
+          select: {
+            id: true,
+            position: true
+          },
+          orderBy: {
+            position: "asc"
+          }
+        }
+      }
+    })
+
+    if (!courseWithChapters) {
+      return {
+        success: false,
+        message: "Chapter not found."
+      }
+    }
+    const chapters = courseWithChapters.chapters;
+    const chpaterToDelete = chapters.find(chapter => chapter.id === chapterId)
+
+    if (!chpaterToDelete) return { success: false, message: "chapter not found on the course" };
+
+    const remaningChapters = chapters.filter(chapter => chapter.id !== chapterId);
+    const updates = remaningChapters.map((chapter, index) => prisma.chapter.update({ where: { id: chapter.id }, data: { position: index + 1 } }))
+
+    await prisma.$transaction([...updates, prisma.chapter.delete({ where: { id: chapterId } })])
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+    return {
+      success: true,
+      message: "Chapter deleted successfully"
+    }
+  }
+  catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+
+
+
+export const deleteLessonA = async ({ chapterId, lessonId, courseId }: { courseId: string, chapterId: string, lessonId: string }): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+    const chapterWithLessons = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      select: {
+        lessons: {
+          select: {
+            id: true,
+            position: true
+          },
+          orderBy: {
+            position: "asc"
+          }
+        }
+      }
+    })
+
+    if (!chapterWithLessons) {
+      return {
+        success: false,
+        message: "lesson not found."
+      }
+    }
+    const lessons = chapterWithLessons.lessons;
+    const lessonToDelete = lessons.find(lesson => lesson.id === lessonId)
+
+    if (!lessonToDelete) return { success: false, message: "lesson not found on the chapter" };
+
+    const remaningChapters = lessons.filter(lesson => lesson.id !== lessonId);
+    const updates = remaningChapters.map((lesson, index) => prisma.lesson.update({ where: { id: lesson.id }, data: { position: index + 1 } }))
+
+    await prisma.$transaction([...updates, prisma.lesson.delete({ where: { id: lessonId } })])
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+    return {
+      success: true,
+      message: "lesson deleted successfully"
+    }
+  }
+  catch {
     return {
       message: "Internal server error",
       success: false
