@@ -4,6 +4,7 @@ import CourseCard from "./_components/course-card";
 import { Suspense } from "react";
 import { CourseGridSkeleton } from "./_components/course-card-skeleton";
 
+export const dynamic = 'force-dynamic';
 const CoursesPage = () => {
   return (
     <Wrapper as="main" className="min-h-screen">
