@@ -23,7 +23,7 @@ export default function HeroSection() {
             <Button
               asChild
               size="lg">
-              <Link href="#" className={buttonVariants()}>
+              <Link href="/courses" className={buttonVariants()}>
                 Explore Courses
               </Link>
             </Button>
