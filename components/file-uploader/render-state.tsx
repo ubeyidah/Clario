@@ -11,7 +11,7 @@ export const RenderEmptyState = ({ isActiveDrag }: { isActiveDrag: boolean }) =>
       <UploadCloudIcon className={cn("size-6 text-muted-foreground", isActiveDrag && "text-primary")} />
     </div>
     <p className="text-center text-base text-muted-foreground">Drop your file here or <span className="cursor-pointer text-primary">click to upload</span></p>
-    <Button className="mt-4" type="button" size={"sm"} variant={"ghost"}>Select file</Button>
+    <Button className="mt-4" type="button" size={"sm"} >Select file</Button>
   </div>
 }
 
@@ -27,9 +27,13 @@ export const RenderErrorState = () => {
 }
 
 
-export const RenderUploadedState = ({ previewUrl, handleRemoveFile, isDeleting }: { previewUrl: string, isDeleting: boolean, handleRemoveFile: () => void }) => {
+export const RenderUploadedState = ({ previewUrl, handleRemoveFile, isDeleting, fileType }: { fileType: "image" | "video", previewUrl: string, isDeleting: boolean, handleRemoveFile: () => void }) => {
   return <div>
-    <Image src={previewUrl} alt="preivew of uploaded image" fill className="object-contain p-2 rounded-lg" />
+    {
+      fileType === "image" ?
+        <Image src={previewUrl} alt="preivew of uploaded image" fill className="object-contain p-2 rounded-lg" />
+        : <video src={previewUrl} controls />
+    }
     <Button disabled={isDeleting} className="absolute top-2 right-2 size-8 p-0 rounded-full border-accent border hover:bg-white" type="button" onClick={handleRemoveFile} variant={"ghost"} size={"icon"}>
       {
         isDeleting ? <Spinner /> : <XIcon className="size-4" />

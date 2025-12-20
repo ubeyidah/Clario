@@ -7,6 +7,10 @@ import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadin
 import { toast } from 'sonner'
 import { v4 as uuidv4 } from "uuid"
 import { useFileKeyToUrl } from '@/hooks/use-file-key-to-url'
+import Image from 'next/image'
+import { Button } from '../ui/button'
+import { Spinner } from '../ui/spinner'
+import { XIcon } from 'lucide-react'
 
 interface UploaderState {
   id: string | null,
@@ -24,16 +28,20 @@ interface iAppProps {
   value: string,
   onChange: (value: string) => void
   invalid?: boolean
+  fileType?: "image" | "video"
 }
 
-const maxFileSize = 5 * 1024 * 1024 // 5MB
-const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
+const imageFileMaxSize = 5 * 1024 * 1024 // 5MB
+const videoFileMaxSize = 2 * 1024 * 1024 * 1024 // 2 GB 
+const Uploader = ({ value, onChange, invalid = false, fileType = "image" }: iAppProps) => {
+
+  const maxFileSize = fileType === "image" ? imageFileMaxSize : videoFileMaxSize
   const fileUrl = useFileKeyToUrl(value || "")
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
     file: null,
     id: null,
-    imageType: "image",
+    imageType: fileType,
     isDeleting: false,
     progress: 0,
     key: value,
@@ -53,7 +61,7 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
           fileName: file.name,
           size: file.size,
           contentType: file.type,
-          isImage: true
+          isImage: fileType === "image"
         })
       })
 
@@ -99,7 +107,7 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
       toast.error("An error occurred during file upload. try again")
       setFileState(prev => ({ ...prev, error: true, uploading: false, progress: 0 }))
     }
-  }, [onChange])
+  }, [onChange, fileType])
 
   const handleRemoveFile = async () => {
     if (fileState.isDeleting || !fileState.objectUrl) return
@@ -128,7 +136,7 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
         error: false,
         file: null,
         id: null,
-        imageType: "image",
+        imageType: fileType,
         isDeleting: false,
         progress: 0,
         objectUrl: null,
@@ -149,10 +157,10 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
       if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
         URL.revokeObjectURL(fileState.objectUrl) // reset past url object to prevent from memory leak
       }
-      setFileState({ file, objectUrl: URL.createObjectURL(file), id: uuidv4(), progress: 0, uploading: false, error: false, imageType: "image", isDeleting: false, key: null })
+      setFileState({ file, objectUrl: URL.createObjectURL(file), id: uuidv4(), progress: 0, uploading: false, error: false, imageType: fileType, isDeleting: false, key: null })
       uploadFile(file)
     }
-  }, [uploadFile, fileState.objectUrl])
+  }, [uploadFile, fileState.objectUrl, fileType])
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {
     if (fileRejection.length) {
@@ -170,7 +178,7 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
       }
     }
   }
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': [] }, maxFiles: 1, multiple: false, maxSize: maxFileSize, onDropRejected: rejectedFiles, disabled: !!fileState.objectUrl || fileState.uploading })
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: fileType == "image" ? { 'image/*': [] } : { "video/*": [] }, maxFiles: 1, multiple: false, maxSize: maxFileSize, onDropRejected: rejectedFiles, disabled: !!fileState.objectUrl || fileState.uploading })
 
   function renderContnet() {
     if (fileState.uploading) {
@@ -180,9 +188,27 @@ const Uploader = ({ value, onChange, invalid = false }: iAppProps) => {
       return <RenderErrorState />
     }
     if (fileState.objectUrl) {
-      return <RenderUploadedState previewUrl={fileState.objectUrl} handleRemoveFile={handleRemoveFile} isDeleting={fileState.isDeleting} />
+      return <RenderUploadedState previewUrl={fileState.objectUrl} handleRemoveFile={handleRemoveFile} fileType={fileType} isDeleting={fileState.isDeleting} />
     }
     return <RenderEmptyState isActiveDrag={isDragActive} />
+  }
+
+
+
+  if (fileState.objectUrl && !fileState.error && !fileState.uploading) {
+    return <div className='w-full relative'>
+      {
+        fileType === "image" ?
+          <Image src={fileState.objectUrl} alt="preivew of uploaded image" width={400} height={200} className="aspect-video w-full rounded-lg" />
+          : <video src={fileState.objectUrl} controls className='rounded-lg object-contain aspect-video w-full' />
+      }
+      <Button disabled={fileState.isDeleting} className="absolute top-2 right-2 size-8 p-0 rounded-xl border-accent border bg-destructive hover:bg-destructive/90! cursor-pointer backdrop-blur-2xl" type="button" onClick={handleRemoveFile} variant={"ghost"} size={"sm"}>
+        {
+          fileState.isDeleting ? <Spinner /> : <XIcon className="size-4" />
+        }
+      </Button>
+
+    </div>
   }
   return (
     <Card {...getRootProps()} className={cn("relative border-2 bg-input/20 p-4 border-dashed transition-colors duration-200 ease-in-out w-full h-64 hover:border-primary", isDragActive && "border-green-500 bg-green-500/5", invalid && "border-destructive hover:border-primary")}>
