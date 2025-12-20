@@ -7,9 +7,10 @@ import Link from "next/link";
 import CourseCard from "./_components/course-card";
 import { getAdminCourses } from "@/app/data/admin/get-admin-courses";
 import { EmptyCourse } from "./_components/course-empty";
+import { Suspense } from "react";
+import CourseCardSkeleton from "./_components/course-card-skeleton";
 
-const CoursesPage = async () => {
-  const courses = await getAdminCourses();
+const CoursesPage = () => {
   return (
     <main>
       <SiteHeader>
@@ -37,14 +38,23 @@ const CoursesPage = async () => {
           </div>
         </div>
 
-        <div className="mt-6">
-          {
-            courses.length ? courses.map((course, i) => <CourseCard course={course} key={course.id} isFirst={i == 0} />) : <EmptyCourse />
-          }
-        </div>
+        <Suspense fallback={<CourseCardSkeleton />}>
+          <RenderAdminCourses />
+        </Suspense>
       </div>
     </main>
   )
 }
 
-export default CoursesPage; 
+async function RenderAdminCourses() {
+  const courses = await getAdminCourses();
+  return <div className="mt-6">
+    {
+      courses.length ? courses.map((course, i) => <CourseCard course={course} key={course.id} isFirst={i == 0} />) : <EmptyCourse />
+    }
+  </div>
+}
+
+
+export default CoursesPage;
+
