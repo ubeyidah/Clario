@@ -34,3 +34,11 @@ export const chapterSchema = z.object({
   name: z.string().min(3, "Chapter name must be at least 3 characters long").max(100, "Chapter name cannot exceed 100 characters"),
   courseId: z.string().min(1, "courseId is required")
 })
+
+
+export const lessonSchema = z.object({
+  name: z.string().min(3, "Lesson name must be at least 3 characters long").max(100, "Lesson name cannot exceed 100 characters"),
+  courseId: z.string().min(1, "courseId is required"),
+  chapterId: z.string().min(1, "courseId is required")
+})
+

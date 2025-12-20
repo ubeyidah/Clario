@@ -3,8 +3,8 @@
 import { requireAdmin } from "@/app/data/admin/require-admin"
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet"
 import { prisma } from "@/lib/db"
-import { ApiResponse, CourseSchema, ChapterSchema } from "@/lib/types"
-import { chapterSchema, courseSchema } from "@/lib/zod-validation"
+import { ApiResponse, CourseSchema, ChapterSchema, LessonSchema } from "@/lib/types"
+import { chapterSchema, courseSchema, lessonSchema } from "@/lib/zod-validation"
 import { request } from "@arcjet/next"
 import { revalidatePath } from "next/cache"
 
@@ -112,7 +112,7 @@ export const reorderChaptersA = async (courseId: string, chapters: { id: string,
 
 
 
-export const createChapterA = async (body: ChapterSchema) => {
+export const createChapterA = async (body: ChapterSchema): Promise<ApiResponse> => {
   await requireAdmin()
   try {
     const { data, success, error } = chapterSchema.safeParse(body);
@@ -151,3 +151,39 @@ export const createChapterA = async (body: ChapterSchema) => {
 
 
 
+export const createLessonA = async (body: LessonSchema): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+    const { data, success, error } = lessonSchema.safeParse(body);
+    if (!success) {
+      return {
+        message: error.issues[0].message,
+        success: false
+      }
+    }
+
+    const { courseId, name, chapterId } = data;
+    await prisma.$transaction(async (tx) => {
+      const maxPosition = await tx.lesson.findFirst({ where: { chapterId }, select: { position: true }, orderBy: { position: 'desc' } })
+      await tx.lesson.create({
+        data: {
+          title: name,
+          chapterId,
+          position: (maxPosition?.position || 0) + 1
+        }
+      })
+    })
+
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+
+    return {
+      message: "lesson created successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
