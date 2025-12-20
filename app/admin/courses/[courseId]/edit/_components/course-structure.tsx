@@ -8,13 +8,14 @@ import { cn } from "@/lib/utils";
 import { DndContext, DragEndEvent, DraggableSyntheticListeners, KeyboardSensor, PointerSensor, rectIntersection, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, MoreVertical, PlusIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, MoreVertical, PlusIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react"
 import { reorderChaptersA, reorderLessonsA } from "../actions";
 import { toast } from "sonner";
 import ChapterCreateDialog from "./chapter-create-dialog";
 import LessonCreateDialog from "./lesson-create-dialog";
+import DeleteChapter from "./delete-chapter";
 
 
 interface iAppProps {
@@ -183,7 +184,7 @@ const CourseStructure = ({ data }: iAppProps) => {
 
   return (
     <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={rectIntersection}>
-      <Card className="pt-2! max-w-4xl mx-auto my-5">
+      <Card className="pt-2! max-w-4xl mx-auto my-5 bg-transparent">
         <CardHeader className="flex flex-row items-center py-2! justify-between border-b border-border">
           <div>
             <CardTitle>Course Curriculum</CardTitle>
@@ -197,7 +198,7 @@ const CourseStructure = ({ data }: iAppProps) => {
               items.map(chapter => (
                 <SortableItem data={{ type: "chapter" }} id={chapter.id} key={chapter.id}>
                   {(listeners, isDragging) => <div>
-                    <Collapsible className="border mb-4 bg-card" open={isDragging ? false : chapter.isOpen} onOpenChange={() => toggleChapter(chapter.id)}>
+                    <Collapsible className="border mb-4 bg-background rounded-md" open={isDragging ? false : chapter.isOpen} onOpenChange={() => toggleChapter(chapter.id)}>
                       <div className="flex items-center justify-between p-3 border-b border-border">
                         <div className="flex items-center gap-2">
                           <button className="cursor-grab opacity-60 hover:opacity-100" {...listeners}>
@@ -217,28 +218,21 @@ const CourseStructure = ({ data }: iAppProps) => {
                               <PlusIcon />
                             </Button>
                           </LessonCreateDialog>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button size="sm" variant={"ghost"} className="rounded-xl">
-                                <MoreVertical />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>Edit Chapter</DropdownMenuItem>
-                              <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-
+                          <DeleteChapter chapterId={chapter.id} courseId={data.id}>
+                            <Button variant={"ghost"} size="icon" className="rounded-xl">
+                              <Trash2 className="size-4 text-destructive hover:bg-destructive/40!" />
+                            </Button>
+                          </DeleteChapter>
                         </div>
                       </div>
 
                       <CollapsibleContent>
-                        <div className="p-1 pl-10">
+                        <div className="p-1 pl-4">
                           <SortableContext strategy={verticalListSortingStrategy} items={chapter.lessons.map(l => l.id)}>
                             {
                               chapter.lessons.map(lesson => <SortableItem id={lesson.id} data={{ type: "lesson", chapterId: chapter.id }} key={lesson.id}>
                                 {
-                                  (lessonListeners) => <div className="flex items-center justify-between p-2 hover:bg-accent rounded-sm">
+                                  (lessonListeners) => <div className="flex items-center justify-between p-2 hover:bg-accent/40 backdrop-blur-2xl rounded-sm">
                                     <div className="flex items-center gap-2">
                                       <button className="cursor-grab opacity-60 hover:opacity-100" {...lessonListeners}>
                                         <GripVertical className="size-4" />

@@ -187,3 +187,52 @@ export const createLessonA = async (body: LessonSchema): Promise<ApiResponse> =>
     }
   }
 }
+
+
+
+export const deleteChapterA = async ({ chapterId, courseId }: { chapterId: string, courseId: string }): Promise<ApiResponse> => {
+  await requireAdmin()
+  try {
+    const courseWithChapters = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: {
+        chapters: {
+          select: {
+            id: true,
+            position: true
+          },
+          orderBy: {
+            position: "asc"
+          }
+        }
+      }
+    })
+
+    if (!courseWithChapters) {
+      return {
+        success: false,
+        message: "Chapter not found."
+      }
+    }
+    const chapters = courseWithChapters.chapters;
+    const chpaterToDelete = chapters.find(chapter => chapter.id === chapterId)
+
+    if (!chpaterToDelete) return { success: false, message: "chapter not found on the course" };
+
+    const remaningChapters = chapters.filter(chapter => chapter.id !== chapterId);
+    const updates = remaningChapters.map((chapter, index) => prisma.chapter.update({ where: { id: chapter.id }, data: { position: index + 1 } }))
+
+    await prisma.$transaction([...updates, prisma.chapter.delete({ where: { id: chapterId } })])
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+    return {
+      success: true,
+      message: "Chapter deleted successfully"
+    }
+  }
+  catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}

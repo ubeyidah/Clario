@@ -27,25 +27,21 @@ const EditCoursePage = async ({ params }: { params: Params }) => {
             <div className="flex items-center flex-col gap-4">
 
               <h3 className="truncate text-lg font-semibold"><span className="text-yellow-700 bg-yellow-600/10 rounded-md px-2 py-1">Edit</span> {truncateText(course.title, 40)}</h3>
-              <TabsList className="gap-1 bg-transparent">
+              <TabsList>
                 <TabsTrigger
-                  className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-2 data-[state=active]:shadow-none"
                   value="basic-info"
                 >
                   <DatabaseIcon
                     aria-hidden="true"
-                    className="-ms-0.5 me-1.5 opacity-60"
                     size={16}
                   />
                   Basic Info
                 </TabsTrigger>
                 <TabsTrigger
-                  className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
                   value="course-strucutre"
                 >
                   <PictureInPictureIcon
                     aria-hidden="true"
-                    className="-ms-0.5 me-1.5 opacity-60"
                     size={16}
                   />
                   Course Structutre
