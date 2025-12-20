@@ -1,7 +1,7 @@
 "use client"
 import { AdminCourseType } from "@/app/data/admin/get-admin-course";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react"
 import { reorderChaptersA, reorderLessonsA } from "../actions";
 import { toast } from "sonner";
+import ChapterCreateDialog from "./chapter-create-dialog";
 
 
 interface iAppProps {
@@ -181,9 +182,13 @@ const CourseStructure = ({ data }: iAppProps) => {
 
   return (
     <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={rectIntersection}>
-      <Card>
-        <CardHeader className="flex flex-row itecems-center justify-between border-b border-border">
-          <CardTitle>Chapters</CardTitle>
+      <Card className="pt-2!">
+        <CardHeader className="flex flex-row items-center py-2! justify-between border-b border-border">
+          <div>
+            <CardTitle>Course Curriculum</CardTitle>
+            <CardDescription className="mt-1">Add chapters and lessons, then drag to organize your course flow.</CardDescription>
+          </div>
+          <ChapterCreateDialog courseId={data.id} />
         </CardHeader>
         <CardContent>
           <SortableContext items={items} strategy={verticalListSortingStrategy}>

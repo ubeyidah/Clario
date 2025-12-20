@@ -28,3 +28,9 @@ export const fileUploadSchema = z.object({
 export const fileDeleteSchema = z.object({
   key: z.string().min(1, "file key is required")
 })
+
+
+export const chapterSchema = z.object({
+  name: z.string().min(3, "Chapter name must be at least 3 characters long").max(100, "Chapter name cannot exceed 100 characters"),
+  courseId: z.string().min(1, "courseId is required")
+})

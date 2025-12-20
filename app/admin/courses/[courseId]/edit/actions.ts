@@ -3,8 +3,8 @@
 import { requireAdmin } from "@/app/data/admin/require-admin"
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet"
 import { prisma } from "@/lib/db"
-import { ApiResponse, CourseSchema } from "@/lib/types"
-import { courseSchema } from "@/lib/zod-validation"
+import { ApiResponse, CourseSchema, ChapterSchema } from "@/lib/types"
+import { chapterSchema, courseSchema } from "@/lib/zod-validation"
 import { request } from "@arcjet/next"
 import { revalidatePath } from "next/cache"
 
@@ -108,3 +108,46 @@ export const reorderChaptersA = async (courseId: string, chapters: { id: string,
     }
   }
 }
+
+
+
+
+export const createChapterA = async (body: ChapterSchema) => {
+  await requireAdmin()
+  try {
+    const { data, success, error } = chapterSchema.safeParse(body);
+    if (!success) {
+      return {
+        message: error.issues[0].message,
+        success: false
+      }
+    }
+
+    const { courseId, name } = data;
+    await prisma.$transaction(async (tx) => {
+      const maxPosition = await tx.chapter.findFirst({ where: { courseId }, select: { position: true }, orderBy: { position: 'desc' } })
+      await tx.chapter.create({
+        data: {
+          title: name,
+          courseId,
+          position: (maxPosition?.position || 0) + 1
+        }
+      })
+    })
+
+    revalidatePath(`/admin/courses/${courseId}/edit`)
+
+    return {
+      message: "chapters created successfully",
+      success: true
+    }
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+
+
