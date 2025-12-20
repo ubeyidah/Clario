@@ -16,6 +16,7 @@ export const COURSE_CATEGORIES = [
   { id: "productivity", label: "Productivity" },
   { id: "engineering", label: "Engineering" },
   { id: "it", label: "IT & Software" },
-  { id: "media", label: "Media & Production" }
+  { id: "media", label: "Media & Production" },
+  { id: "ai", label: "Artificial Intelligence" }
 ] as const;
 

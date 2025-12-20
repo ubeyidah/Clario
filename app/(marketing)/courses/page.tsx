@@ -2,6 +2,7 @@ import { getPublicCourses } from "@/app/data/course/get-public-courses";
 import Wrapper from "@/components/common/wrapper"
 import CourseCard from "./_components/course-card";
 import { Suspense } from "react";
+import { CourseGridSkeleton } from "./_components/course-card-skeleton";
 
 const CoursesPage = () => {
   return (
@@ -10,7 +11,7 @@ const CoursesPage = () => {
         <h1 className="text-2xl font-medium">Explore Courses</h1>
         <p className="text-muted-foreground">Discover our wide rage of courses designed to help you achieve your learning goals.</p>
       </div>
-      <Suspense fallback="loading...">
+      <Suspense fallback={<CourseGridSkeleton />}>
         <RenderPublicCourses />
       </Suspense>
     </Wrapper>
