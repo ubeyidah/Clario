@@ -39,7 +39,7 @@ export const chapterSchema = z.object({
 export const lessonSchema = z.object({
   name: z.string().min(3, "Lesson name must be at least 3 characters long").max(100, "Lesson name cannot exceed 100 characters"),
   courseId: z.string().min(1, "courseId is required"),
-  chapterId: z.string().min(1, "courseId is required"),
+  chapterId: z.string().min(1, "chapterId is required"),
   description: z.string().min(3, "Please enter a description (min 3 characters).").optional(),
   videoFileKey: z.string().min(3, "Upload a video for this lesson.").optional(),
   thumbnailFileKey: z.string().min(3, "Upload a thumbnail image.").optional(),
