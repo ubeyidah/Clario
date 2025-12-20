@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { DndContext, DragEndEvent, DraggableSyntheticListeners, KeyboardSensor, PointerSensor, rectIntersection, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, PlusIcon, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, Layers, PlusIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react"
 import { reorderChaptersA, reorderLessonsA } from "../actions";
@@ -16,6 +16,14 @@ import ChapterCreateDialog from "./chapter-create-dialog";
 import LessonCreateDialog from "./lesson-create-dialog";
 import DeleteChapter from "./delete-chapter";
 import DeleteLessonDialog from "./delete-lesson";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 
 
 interface iAppProps {
@@ -193,72 +201,99 @@ const CourseStructure = ({ data }: iAppProps) => {
           <ChapterCreateDialog courseId={data.id} />
         </CardHeader>
         <CardContent>
-          <SortableContext items={items} strategy={verticalListSortingStrategy}>
-            {
-              items.map(chapter => (
-                <SortableItem data={{ type: "chapter" }} id={chapter.id} key={chapter.id}>
-                  {(listeners, isDragging) => <div>
-                    <Collapsible className="border mb-4 bg-background rounded-md" open={isDragging ? false : chapter.isOpen} onOpenChange={() => toggleChapter(chapter.id)}>
-                      <div className="flex items-center justify-between p-3 border-b border-border">
-                        <div className="flex items-center gap-2">
-                          <button className="cursor-grab opacity-60 hover:opacity-100" {...listeners}>
-                            <GripVertical className="size-4" />
-                          </button>
-                          <CollapsibleTrigger asChild>
-                            <Button size="sm" variant={"ghost"} className="rounded-xl">
-                              {chapter.isOpen ? <ChevronDown /> : <ChevronRight />}
-                            </Button>
-                          </CollapsibleTrigger>
-                          <h1 className="capitalize pl-2">{chapter.title}</h1>
+          {
+            data.chapters.length == 0 ? <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Layers />
+                </EmptyMedia>
+                <EmptyTitle>No Chapters Yet</EmptyTitle>
+                <EmptyDescription>This course has no chapters. Add your first chapter to start organizing lessons.</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <ChapterCreateDialog text="Add Chapter" courseId={data.id} />
+              </EmptyContent>
+            </Empty> : <SortableContext items={items} strategy={verticalListSortingStrategy}>
+              {
+                items.map(chapter => (
+                  <SortableItem data={{ type: "chapter" }} id={chapter.id} key={chapter.id}>
+                    {(listeners, isDragging) => <div>
+                      <Collapsible className="border mb-4 bg-background rounded-md" open={isDragging ? false : chapter.isOpen} onOpenChange={() => toggleChapter(chapter.id)}>
+                        <div className="flex items-center justify-between p-3 border-b border-border">
+                          <div className="flex items-center gap-2">
+                            <button className="cursor-grab opacity-60 hover:opacity-100" {...listeners}>
+                              <GripVertical className="size-4" />
+                            </button>
+                            <CollapsibleTrigger asChild>
+                              <Button size="sm" variant={"ghost"} className="rounded-xl">
+                                {chapter.isOpen ? <ChevronDown /> : <ChevronRight />}
+                              </Button>
+                            </CollapsibleTrigger>
+                            <h1 className="capitalize pl-2">{chapter.title}</h1>
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            <LessonCreateDialog chapterId={chapter.id} courseId={data.id}>
+                              <Button variant={"ghost"} size="icon" className="rounded-xl">
+                                <PlusIcon />
+                              </Button>
+                            </LessonCreateDialog>
+                            <DeleteChapter chapterId={chapter.id} courseId={data.id}>
+                              <Button variant={"ghost"} size="icon" className="rounded-xl">
+                                <Trash2 className="size-4 text-destructive hover:bg-destructive/40!" />
+                              </Button>
+                            </DeleteChapter>
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                          <LessonCreateDialog chapterId={chapter.id} courseId={data.id}>
-                            <Button variant={"ghost"} size="icon" className="rounded-xl">
-                              <PlusIcon />
-                            </Button>
-                          </LessonCreateDialog>
-                          <DeleteChapter chapterId={chapter.id} courseId={data.id}>
-                            <Button variant={"ghost"} size="icon" className="rounded-xl">
-                              <Trash2 className="size-4 text-destructive hover:bg-destructive/40!" />
-                            </Button>
-                          </DeleteChapter>
-                        </div>
-                      </div>
-
-                      <CollapsibleContent>
-                        <div className="p-1 pl-4">
-                          <SortableContext strategy={verticalListSortingStrategy} items={chapter.lessons.map(l => l.id)}>
+                        <CollapsibleContent>
+                          <div className="p-1 pl-4">
                             {
-                              chapter.lessons.map(lesson => <SortableItem id={lesson.id} data={{ type: "lesson", chapterId: chapter.id }} key={lesson.id}>
-                                {
-                                  (lessonListeners) => <div className="flex items-center justify-between p-2 hover:bg-accent/40 backdrop-blur-2xl rounded-sm">
-                                    <div className="flex items-center gap-2">
-                                      <button className="cursor-grab opacity-60 hover:opacity-100" {...lessonListeners}>
-                                        <GripVertical className="size-4" />
-                                      </button>
-                                      <FileTextIcon className="size-4" />
-                                      <Link href={`/admin/courses/${data.id}/${chapter.id}/${lesson.id}`}>{lesson.title}</Link>
-                                    </div>
+                              chapter.lessons.length == 0 ? <div className="flex items-center flex-col p-4 justify-center">
+                                <h5 className="text-sm text-muted-foreground text-center">
+                                  No lessons yet
+                                </h5>
 
-                                    <DeleteLessonDialog lessonId={lesson.id} chapterId={chapter.id} courseId={data.id}>
-                                      <Button variant={"ghost"} size="icon" className="rounded-xl">
-                                        <Trash2 className="size-4 text-destructive hover:bg-destructive/40!" />
-                                      </Button>
-                                    </DeleteLessonDialog>
-                                  </div>
+                                <LessonCreateDialog chapterId={chapter.id} courseId={data.id}>
+                                  <Button variant={"link"} size="sm" className="rounded-xl">
+                                    add your first lesson.
+                                  </Button>
+                                </LessonCreateDialog>
+                              </div> : <SortableContext strategy={verticalListSortingStrategy} items={chapter.lessons.map(l => l.id)}>
+                                {
+                                  chapter.lessons.map(lesson => <SortableItem id={lesson.id} data={{ type: "lesson", chapterId: chapter.id }} key={lesson.id}>
+                                    {
+                                      (lessonListeners) => <div className="flex items-center justify-between p-2 hover:bg-accent/40 backdrop-blur-2xl rounded-sm">
+                                        <div className="flex items-center gap-2">
+                                          <button className="cursor-grab opacity-60 hover:opacity-100" {...lessonListeners}>
+                                            <GripVertical className="size-4" />
+                                          </button>
+                                          <FileTextIcon className="size-4" />
+                                          <Link href={`/admin/courses/${data.id}/${chapter.id}/${lesson.id}`}>{lesson.title}</Link>
+                                        </div>
+
+                                        <DeleteLessonDialog lessonId={lesson.id} chapterId={chapter.id} courseId={data.id}>
+                                          <Button variant={"ghost"} size="icon" className="rounded-xl">
+                                            <Trash2 className="size-4 text-destructive hover:bg-destructive/40!" />
+                                          </Button>
+                                        </DeleteLessonDialog>
+                                      </div>
+                                    }
+                                  </SortableItem>)
                                 }
-                              </SortableItem>)
+                              </SortableContext>
+
                             }
-                          </SortableContext>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  </div>}
-                </SortableItem>
-              ))
-            }
-          </SortableContext>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>}
+                  </SortableItem>
+                ))
+              }
+            </SortableContext>
+
+          }
         </CardContent>
       </Card>
     </DndContext>

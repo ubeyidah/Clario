@@ -94,7 +94,7 @@ const LessonCreateDialog = ({ courseId, chapterId, children }: iAppProps) => {
             />
           </FieldGroup>
           <div className="mt-4 flex justify-end">
-            <Button type="submit" form="course-chapter-form" disabled={pending}>{pending ? <Spinner /> : "Create Lesson"}</Button>
+            <Button type="submit" form="course-lesson-form" disabled={pending}>{pending ? <Spinner /> : "Create Lesson"}</Button>
           </div>
         </form>
       </DialogContent>

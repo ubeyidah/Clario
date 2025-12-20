@@ -22,9 +22,10 @@ import { Spinner } from "@/components/ui/spinner"
 
 interface iAppProps {
   courseId: string
+  text?: string
 }
 
-const ChapterCreateDialog = ({ courseId }: iAppProps) => {
+const ChapterCreateDialog = ({ courseId, text = "New Chapter" }: iAppProps) => {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition()
   const form = useForm<ChapterSchema>({
@@ -58,7 +59,7 @@ const ChapterCreateDialog = ({ courseId }: iAppProps) => {
   return (
     <Dialog open={open} onOpenChange={(state) => setOpen(state)}>
       <DialogTrigger asChild>
-        <Button variant={"outline"} size={"sm"}>New Chapter</Button>
+        <Button variant={"outline"} size={"sm"}>{text}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
