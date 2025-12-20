@@ -3,12 +3,11 @@ import { AdminCourseType } from "@/app/data/admin/get-admin-course";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { DndContext, DragEndEvent, DraggableSyntheticListeners, KeyboardSensor, PointerSensor, rectIntersection, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, MoreVertical, PlusIcon, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, PlusIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react"
 import { reorderChaptersA, reorderLessonsA } from "../actions";
@@ -16,6 +15,7 @@ import { toast } from "sonner";
 import ChapterCreateDialog from "./chapter-create-dialog";
 import LessonCreateDialog from "./lesson-create-dialog";
 import DeleteChapter from "./delete-chapter";
+import DeleteLessonDialog from "./delete-lesson";
 
 
 interface iAppProps {
@@ -241,17 +241,11 @@ const CourseStructure = ({ data }: iAppProps) => {
                                       <Link href={`/admin/courses/${data.id}/${chapter.id}/${lesson.id}`}>{lesson.title}</Link>
                                     </div>
 
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button size="sm" variant={"ghost"} className="rounded-xl">
-                                          <MoreVertical />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <DeleteLessonDialog lessonId={lesson.id} chapterId={chapter.id} courseId={data.id}>
+                                      <Button variant={"ghost"} size="icon" className="rounded-xl">
+                                        <Trash2 className="size-4 text-destructive hover:bg-destructive/40!" />
+                                      </Button>
+                                    </DeleteLessonDialog>
                                   </div>
                                 }
                               </SortableItem>)

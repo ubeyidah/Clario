@@ -3,7 +3,7 @@
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { tryCatch } from "@/hooks/try-catch"
 import { ReactNode, useState, useTransition } from "react"
-import { deleteChapterA } from "../actions"
+import { deleteLessonA } from "../actions"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
@@ -11,15 +11,16 @@ import { Button } from "@/components/ui/button"
 interface iAppProps {
   chapterId: string,
   courseId: string,
+  lessonId: string,
   children: ReactNode
 }
 
-const DeleteChapter = ({ chapterId, courseId, children }: iAppProps) => {
+export default function DeleteLessonDialog({ chapterId, courseId, lessonId, children }: iAppProps) {
   const [open, setOpen] = useState(false)
   const [pending, startTransition] = useTransition()
   const handleDelete = async () => {
     startTransition(async () => {
-      const { data: result, error } = await tryCatch(deleteChapterA({ chapterId, courseId }))
+      const { data: result, error } = await tryCatch(deleteLessonA({ chapterId, courseId, lessonId }))
       if (error) {
         toast.error("Something went wrong")
         return
@@ -27,7 +28,7 @@ const DeleteChapter = ({ chapterId, courseId, children }: iAppProps) => {
 
       if (result.success) {
         setOpen(false)
-        toast.success("Chapter deleted successfully")
+        toast.success("Lesson deleted successfully")
       } else if (!result.success) {
         toast.error(result.message)
       }
@@ -40,8 +41,8 @@ const DeleteChapter = ({ chapterId, courseId, children }: iAppProps) => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Chapter</AlertDialogTitle>
-          <AlertDialogDescription>Remove this chapter from the course. This action cannot be undone.</AlertDialogDescription>
+          <AlertDialogTitle>Delete Lesson</AlertDialogTitle>
+          <AlertDialogDescription>Remove this lesson from the chapter. This action cannot be undone.</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
@@ -54,4 +55,3 @@ const DeleteChapter = ({ chapterId, courseId, children }: iAppProps) => {
   )
 }
 
-export default DeleteChapter
