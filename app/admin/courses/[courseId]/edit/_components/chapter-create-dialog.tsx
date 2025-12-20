@@ -56,8 +56,15 @@ const ChapterCreateDialog = ({ courseId, text = "New Chapter" }: iAppProps) => {
     })
   }
 
+  const handleOpenChange = (state: boolean) => {
+    if (!state) {
+      form.reset()
+    }
+    setOpen(state)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={(state) => setOpen(state)}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant={"outline"} size={"sm"}>{text}</Button>
       </DialogTrigger>

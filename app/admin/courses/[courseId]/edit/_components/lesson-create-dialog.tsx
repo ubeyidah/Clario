@@ -39,6 +39,12 @@ const LessonCreateDialog = ({ courseId, chapterId, children }: iAppProps) => {
     }
   })
 
+  const handleOpenChange = (state: boolean) => {
+    if (!state) {
+      form.reset()
+    }
+    setOpen(state)
+  }
 
   const onSubmit = async (data: LessonSchema) => {
     startTransition(async () => {
@@ -60,7 +66,7 @@ const LessonCreateDialog = ({ courseId, chapterId, children }: iAppProps) => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(state) => setOpen(state)}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
