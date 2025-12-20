@@ -2,10 +2,10 @@ import { prisma } from "@/lib/db"
 import { requireAdmin } from "./require-admin"
 import { notFound } from "next/navigation"
 
-export const getAdminLesson = async (lessonId: string) => {
+export const getAdminLesson = async (lessonId: string, chapterId: string) => {
   await requireAdmin()
   const lesson = await prisma.lesson.findUnique({
-    where: { id: lessonId }, select: {
+    where: { id: lessonId, chapterId }, select: {
       videoFileKey: true,
       title: true,
       description: true,

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db"
 import { ApiResponse, LessonSchema } from "@/lib/types"
 import { lessonSchema } from "@/lib/zod-validation"
 
-export const updateLesson = async (body: LessonSchema, lessonId: string): Promise<ApiResponse> => {
+export const updateLesson = async (body: LessonSchema, lessonId: string,): Promise<ApiResponse> => {
   await requireAdmin()
   try {
     const { success, data, error } = lessonSchema.safeParse(body)

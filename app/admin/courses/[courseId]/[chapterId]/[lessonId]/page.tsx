@@ -10,7 +10,7 @@ type Params = {
 
 const LessonPage = async ({ params }: { params: Promise<Params> }) => {
   const { lessonId, chapterId, courseId } = await params
-  const lesson = await getAdminLesson(lessonId)
+  const lesson = await getAdminLesson(lessonId, chapterId)
   return (
     <div>
       <SiteHeader />
