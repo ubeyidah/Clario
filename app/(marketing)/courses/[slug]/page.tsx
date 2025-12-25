@@ -7,10 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { formatDuration, formatETB } from "@/lib/utils";
-import { IconBook, IconCategory, IconChartBar, IconClock, IconPlayerPlay } from "@tabler/icons-react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { IconBook, IconCategory, IconChartBar, IconClock } from "@tabler/icons-react";
+import { Check, ChevronsUpDown, LockKeyholeOpen } from "lucide-react";
 import Image from "next/image";
 import { Suspense } from "react";
+import CourseDetailSkeleton from "./_components/course-detail-skeleton";
 
 type Params = { slug: string }
 const CourseDetail = async ({ params }: { params: Promise<Params> }) => {
@@ -18,7 +19,7 @@ const CourseDetail = async ({ params }: { params: Promise<Params> }) => {
 
   return (
     <Wrapper as="main" className="min-h-screen">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<CourseDetailSkeleton />}>
         <RenderCourseDetail slug={slug} />
       </Suspense>
     </Wrapper>
@@ -98,7 +99,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                     chapter.lessons.map((lesson, index) => (<div key={lesson.id} className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <div className="size-8 flex items-center justify-center rounded-full bg-secondary/20 text-foreground">
-                          <IconPlayerPlay className="size-4" />
+                          <LockKeyholeOpen className="size-4 text-green-600" />
                         </div>
                         <h4>{lesson.title}</h4>
                       </div>

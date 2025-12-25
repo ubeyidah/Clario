@@ -3,7 +3,28 @@
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/types";
+import { Session } from "better-auth";
 import { revalidatePath } from "next/cache";
+
+const adminServer = async (fn:(session: any) => Promise<ApiResponse>): Promise<ApiResponse> => {
+  const session = await requireAdmin()
+   try {
+    return await fn(session)
+  } catch {
+    return {
+      message: "Internal server error",
+      success: false
+    }
+  }
+}
+
+export const updateCourse = adminServer(async (session) => {
+  console.log(session)
+  return {
+    success: false,
+    message: "blah blah blah"
+  }
+})
 
 export const deleteCourseA = async (id: string): Promise<ApiResponse> => {
   const session = await requireAdmin()
