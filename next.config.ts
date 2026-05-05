@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import "./lib/env";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -8,10 +9,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "clario.t3.storage.dev",
         port: "",
-        pathname: "**"
-      }
-    ]
-  }
+        pathname: "**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
