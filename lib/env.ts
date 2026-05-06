@@ -19,4 +19,5 @@ export const env = defineEnv({
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   STRIPE_SECRET_KEY: z.string().min(1),
   BETTER_AUTH_URL: z.url(),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1),
 });

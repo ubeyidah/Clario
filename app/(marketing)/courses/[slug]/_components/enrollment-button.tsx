@@ -40,7 +40,10 @@ const EnrollmentButton = ({ courseId, isEnrolled }: EnrollmentButtonProps) => {
 
   if (isEnrolled) {
     return (
-      <Link href="/dashbaord" className={buttonVariants()}>
+      <Link
+        href="/dashboard"
+        className={buttonVariants({ className: "w-full" })}
+      >
         Watch now
       </Link>
     );
