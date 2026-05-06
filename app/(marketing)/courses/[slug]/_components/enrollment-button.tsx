@@ -21,7 +21,7 @@ const EnrollmentButton = ({ courseId, isEnrolled }: EnrollmentButtonProps) => {
       const { data: result, error } = await tryCatch(enrollInCourseA(courseId));
       console.log({ result, error });
       if (error) {
-        if ((error as any)?.message?.includes("NEXT_REDIRECT")) {
+        if (error instanceof Error && error.message?.includes("NEXT_REDIRECT")) {
           return;
         }
         toast.error("An unexpected error occurred.");
@@ -40,7 +40,10 @@ const EnrollmentButton = ({ courseId, isEnrolled }: EnrollmentButtonProps) => {
 
   if (isEnrolled) {
     return (
-      <Link href="/dashbaord" className={buttonVariants()}>
+      <Link
+        href="/dashboard"
+        className={buttonVariants({ className: "w-full" })}
+      >
         Watch now
       </Link>
     );
