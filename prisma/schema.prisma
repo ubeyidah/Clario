@@ -95,6 +95,7 @@ model Course {
   category         String
   shortDescription String
   slug             String @unique
+  stripePriceId    String @unique
 
   status CourseStatus @default(Draft)
 

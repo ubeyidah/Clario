@@ -41,6 +41,7 @@ export const enrollInCourseA = async (
         title: true,
         price: true,
         slug: true,
+        stripePriceId: true,
       },
     });
     if (!course) {
@@ -127,7 +128,7 @@ export const enrollInCourseA = async (
         customer: stripeCustomerId,
         line_items: [
           {
-            price: "price_1TTyRsE4C6RzB4jJfZpwWIk8",
+            price: course.stripePriceId,
             quantity: 1,
           },
         ],

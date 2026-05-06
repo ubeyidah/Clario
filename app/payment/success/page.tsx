@@ -5,11 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Confetti from "react-confetti";
+import { useEffect, useState } from "react";
 
 export default function PaymentSuccess() {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    setSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  }, []);
   return (
     <>
-      <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} />
+      {size.width > 0 && (
+        <Confetti width={size.width} height={size.height} recycle={false} />
+      )}
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md rounded-2xl border-none bg-transparent shadow-none">
           <CardContent className="flex flex-col items-center gap-5 py-10 text-center">
@@ -39,3 +50,4 @@ export default function PaymentSuccess() {
     </>
   );
 }
+

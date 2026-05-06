@@ -3,35 +3,49 @@
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 import { ApiResponse, CourseSchema } from "@/lib/types";
 import { courseSchema } from "@/lib/zod-validation";
 import { request } from "@arcjet/next";
 
+const aj = arcjet
+  .withRule(
+    detectBot({
+      mode: "LIVE",
+      allow: [],
+    }),
+  )
+  .withRule(
+    fixedWindow({
+      mode: "LIVE",
+      window: "5m",
+      max: 3,
+    }),
+  ); // in 5 minute max 3 requests
 
-const aj = arcjet.withRule(detectBot({
-  mode: "LIVE",
-  allow: []
-})).withRule(fixedWindow({
-  mode: "LIVE",
-  window: "5m",
-  max: 3
-})) // in 5 minute max 3 requests
-
-export const createCourseA = async (body: CourseSchema): Promise<ApiResponse> => {
-  const session = await requireAdmin()
+export const createCourseA = async (
+  body: CourseSchema,
+): Promise<ApiResponse> => {
+  const session = await requireAdmin();
   try {
     const req = await request();
     const decision = await aj.protect(req, {
-      fingerprint: session.user.id
-    })
+      fingerprint: session.user.id,
+    });
 
     if (decision.isDenied()) {
       if (decision.reason.isBot()) {
-        return { success: false, message: "We detected automated or unusual activity.", }
+        return {
+          success: false,
+          message: "We detected automated or unusual activity.",
+        };
       } else if (decision.reason.isRateLimit()) {
-        return { success: false, message: "Please wait a few seconds before trying again.", }
+        return {
+          success: false,
+          message: "Please wait a few seconds before trying again.",
+        };
       } else {
-        return { success: false, message: "Forbidden" }
+        return { success: false, message: "Forbidden" };
       }
     }
 
@@ -40,23 +54,34 @@ export const createCourseA = async (body: CourseSchema): Promise<ApiResponse> =>
     if (!success) {
       return {
         success: false,
-        message: error.issues[0].message
-      }
+        message: error.issues[0].message,
+      };
     }
+
+    const stripeCourse = await stripe.products.create({
+      name: data.title,
+      description: data.shortDescription,
+      default_price_data: {
+        currency: "etb",
+        unit_amount: data.price * 100,
+      },
+    });
+
     await prisma.course.create({
       data: {
-        ...data, userId: session?.user.id as string
-      }
-    })
+        ...data,
+        userId: session?.user.id as string,
+        stripePriceId: stripeCourse.default_price as string,
+      },
+    });
     return {
       success: true,
-      message: "Course created successfully"
-    }
+      message: "Course created successfully",
+    };
   } catch {
     return {
       message: "Internal server error",
-      success: false
-    }
+      success: false,
+    };
   }
-}
-
+};
