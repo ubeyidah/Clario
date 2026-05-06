@@ -18,8 +18,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
-  courses    Course[]
-  enrollment Enrollment[]
+  courses     Course[]
+  enrollments Enrollment[]
 
   stripeCustomerId String? @unique
 
