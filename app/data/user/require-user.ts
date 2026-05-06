@@ -9,7 +9,7 @@ export const requireUser = async () => {
   });
 
   if (!session) {
-    return redirect("/login", RedirectType.replace);
+    return redirect("/sign-in", RedirectType.replace);
   }
 
   return session.user;
