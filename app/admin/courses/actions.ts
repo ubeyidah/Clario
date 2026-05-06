@@ -24,7 +24,7 @@ export const deleteCourseA = async (id: string): Promise<ApiResponse> => {
     revalidatePath("/admin/courses");
     return {
       success: true,
-      message: "Course deleted sucessfully",
+      message: "Course deleted successfully",
     };
   } catch {
     return {
