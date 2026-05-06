@@ -4,23 +4,12 @@ import { CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 
 export default function PaymentSuccess() {
-  const [runConfetti, setRunConfetti] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setRunConfetti(false);
-    }, 5000); // Stop confetti after 5 seconds
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <>
-      {runConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+      <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} />
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md rounded-2xl border-none bg-transparent shadow-none">
           <CardContent className="flex flex-col items-center gap-5 py-10 text-center">
