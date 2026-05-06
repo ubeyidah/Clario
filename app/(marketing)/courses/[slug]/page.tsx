@@ -227,7 +227,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                 </div>
               ))}
             </div>
-            <EnrollmentButton courseId={course.id} isEnrolled={isErolled} />
+            <EnrollmentButton courseId={course.id} isEnrolled={isEnrolled} />
           </CardContent>
         </Card>
       </div>
