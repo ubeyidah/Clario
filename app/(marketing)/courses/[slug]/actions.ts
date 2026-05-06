@@ -147,6 +147,11 @@ export const enrollInCourseA = async (
         checkoutUrl: checkoutSession.url,
       };
     });
+
+    if ('success' in result && 'message' in result) {
+      return result as ApiResponse;
+    }
+
     checkoutUrl = result.checkoutUrl as string;
   } catch (error) {
     console.log(error);
