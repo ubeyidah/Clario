@@ -39,7 +39,7 @@ const CourseDetail = async ({ params }: { params: Promise<Params> }) => {
 const features = ["Full-time Access", "Access on Mobile and Desktop"];
 async function RenderCourseDetail({ slug }: { slug: string }) {
   const course = await getCourseBySlug(slug);
-  const isErolled = await isCourseBought(course.id);
+  const isEnrolled = await isCourseBought(course.id);
   const thumbnailUrl = `https://clario.t3.storage.dev/${course.fileKey}`;
   const totalLessons = course.chapters.reduce(
     (acc, chapter) => acc + chapter.lessons.length,
