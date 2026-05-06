@@ -2,7 +2,6 @@ import { getCourseBySlug } from "@/app/data/course/get-course-detail";
 import Wrapper from "@/components/common/wrapper";
 import RenderEditor from "@/components/text-editor/render-editor";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
@@ -21,6 +20,8 @@ import { Check, ChevronsUpDown, LockKeyholeIcon } from "lucide-react";
 import Image from "next/image";
 import { Suspense } from "react";
 import CourseDetailSkeleton from "./_components/course-detail-skeleton";
+import { isCourseBought } from "@/app/data/user/user-is-enrolled";
+import EnrollmentButton from "./_components/enrollment-button";
 
 type Params = { slug: string };
 const CourseDetail = async ({ params }: { params: Promise<Params> }) => {
@@ -38,6 +39,7 @@ const CourseDetail = async ({ params }: { params: Promise<Params> }) => {
 const features = ["Full-time Access", "Access on Mobile and Desktop"];
 async function RenderCourseDetail({ slug }: { slug: string }) {
   const course = await getCourseBySlug(slug);
+  const isErolled = await isCourseBought(course.id);
   const thumbnailUrl = `https://clario.t3.storage.dev/${course.fileKey}`;
   const totalLessons = course.chapters.reduce(
     (acc, chapter) => acc + chapter.lessons.length,
@@ -225,7 +227,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                 </div>
               ))}
             </div>
-            <Button className="w-full">Enroll Now</Button>
+            <EnrollmentButton courseId={course.id} isEnrolled={isErolled} />
           </CardContent>
         </Card>
       </div>
