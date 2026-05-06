@@ -150,7 +150,7 @@ model Lesson {
 
 model Enrollment {
   id     String           @id @default(cuid())
-  amount Int
+  amount Float
   status EnrollmentStatus @default(PENDING)
 
   createdAt DateTime @default(now())
