@@ -19,7 +19,6 @@ const EnrollmentButton = ({ courseId, isEnrolled }: EnrollmentButtonProps) => {
   const handleEnroll = () => {
     startTransition(async () => {
       const { data: result, error } = await tryCatch(enrollInCourseA(courseId));
-      console.log({ result, error });
       if (error) {
         if (error instanceof Error && error.message?.includes("NEXT_REDIRECT")) {
           return;
