@@ -10,6 +10,14 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -23,6 +31,7 @@ import {
   IconCalendar,
   IconActivity,
   IconClock,
+  IconDotsVertical,
 } from "@tabler/icons-react";
 import { formatDate } from "../dummy-data";
 import type { UserDetail } from "../actions";
@@ -39,47 +48,84 @@ export function UserDetailDrawer({ user, open, onOpenChange, isLoading = false }
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[85vh]">
         <DrawerHeader>
-          <div className="flex items-center gap-4">
-            {isLoading ? (
-              <>
-                <Skeleton className="h-16 w-16 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-8 w-48" />
-                  <Skeleton className="h-4 w-64" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-20" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-4 w-48" />
                   </div>
-                </div>
-              </>
-            ) : user ? (
-              <>
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={user.image || undefined} alt={user.name} />
-                  <AvatarFallback className="text-lg">
-                    {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <DrawerTitle className="text-2xl">{user.name}</DrawerTitle>
-                  <DrawerDescription className="text-base">{user.email}</DrawerDescription>
-                  <div className="flex gap-2 mt-2">
-                    <Badge variant={user.role === "admin" ? "destructive" : "secondary"}>
-                      {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "No Role"}
-                    </Badge>
-                    <Badge variant={user.banned ? "destructive" : "default"}>
-                      {user.banned ? "Inactive" : "Active"}
-                    </Badge>
-                    {user.emailVerified && (
-                      <Badge variant="outline" className="text-green-600">
-                        Verified
-                      </Badge>
-                    )}
+                </>
+              ) : user ? (
+                <>
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={user.image || undefined} alt={user.name} />
+                    <AvatarFallback className="text-lg">
+                      {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <DrawerTitle className="text-xl">{user.name}</DrawerTitle>
+                    <DrawerDescription className="text-sm">{user.email}</DrawerDescription>
                   </div>
-                </div>
-              </>
-            ) : null}
+                </>
+              ) : null}
+            </div>
+
+            {/* Dropdown Menu */}
+            {!isLoading && user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <IconDotsVertical className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuItem>
+                    <IconMail className="mr-2 h-4 w-4" />
+                    Send Email
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <IconUserCheck className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {user.banned ? (
+                    <DropdownMenuItem className="text-green-600">
+                      <IconShieldOff className="mr-2 h-4 w-4" />
+                      Unban User
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem className="text-red-600">
+                      <IconShield className="mr-2 h-4 w-4" />
+                      Ban User
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
+
+          {/* Badges below */}
+          {!isLoading && user && (
+            <div className="flex gap-2 mt-4">
+              <Badge variant={user.role === "admin" ? "destructive" : "secondary"}>
+                {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "No Role"}
+              </Badge>
+              <Badge variant={user.banned ? "destructive" : "default"}>
+                {user.banned ? "Inactive" : "Active"}
+              </Badge>
+              {user.emailVerified && (
+                <Badge variant="outline" className="text-green-600">
+                  Verified
+                </Badge>
+              )}
+            </div>
+          )}
         </DrawerHeader>
 
         <div className="flex-1 overflow-y-auto px-4">
@@ -218,29 +264,6 @@ export function UserDetailDrawer({ user, open, onOpenChange, isLoading = false }
         </div>
 
         <DrawerFooter>
-          <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
-            <Button variant="outline" className="flex-1">
-              <IconMail className="mr-2 h-4 w-4" />
-              Send Email
-            </Button>
-            <Button variant="outline" className="flex-1">
-              <IconUserCheck className="mr-2 h-4 w-4" />
-              Edit Profile
-            </Button>
-            {!isLoading && user && (
-              user.banned ? (
-                <Button variant="outline" className="flex-1 text-green-600 hover:text-green-700">
-                  <IconShieldOff className="mr-2 h-4 w-4" />
-                  Unban User
-                </Button>
-              ) : (
-                <Button variant="outline" className="flex-1 text-red-600 hover:text-red-700">
-                  <IconShield className="mr-2 h-4 w-4" />
-                  Ban User
-                </Button>
-              )
-            )}
-          </div>
           <DrawerClose asChild>
             <Button variant="outline">Close</Button>
           </DrawerClose>
