@@ -50,11 +50,11 @@ const data = {
       url: "/admin/analytics",
       icon: IconChartBar,
     },
-    {
-      title: "Teams",
-      url: "/admin/teams",
-      icon: IconUsers,
-    },
+     {
+       title: "Users",
+       url: "/admin/users",
+       icon: IconUsers,
+     },
   ],
   navSecondary: [
     {
