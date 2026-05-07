@@ -31,28 +31,45 @@ export type UserListResult = {
   total: number;
 };
 
-const buildWhereClause = (params: UserListParams) => {
-  const where: any = {};
+const buildWhereClause = (params: UserListParams): {
+  AND?: Array<{
+    OR?: Array<{ [key: string]: { contains: string; mode: string } }>;
+    role?: string;
+    banned?: boolean;
+  }>;
+} => {
+  const where: {
+    AND?: Array<{
+      OR?: Array<{ [key: string]: { contains: string; mode: string } }>;
+      role?: string;
+      banned?: boolean;
+    }>;
+  } = {};
 
   // Search filter
   if (params.search) {
-    where.OR = [
-      { name: { contains: params.search, mode: "insensitive" } },
-      { email: { contains: params.search, mode: "insensitive" } }
-    ];
+    where.AND = where.AND || [];
+    where.AND.push({
+      OR: [
+        { name: { contains: params.search, mode: "insensitive" } },
+        { email: { contains: params.search, mode: "insensitive" } }
+      ]
+    });
   }
 
   // Role filter
   if (params.role && params.role !== "all") {
-    where.role = params.role;
+    where.AND = where.AND || [];
+    where.AND.push({ role: params.role });
   }
 
   // Status filter - simplified as requested
   if (params.status && params.status !== "all") {
+    where.AND = where.AND || [];
     if (params.status === "inactive") {
-      where.banned = true;
+      where.AND.push({ banned: true });
     } else if (params.status === "active") {
-      where.banned = false;
+      where.AND.push({ banned: false });
     }
   }
 

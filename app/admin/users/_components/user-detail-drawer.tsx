@@ -24,7 +24,7 @@ import {
   IconClock,
 } from "@tabler/icons-react";
 import { formatDate } from "../dummy-data";
-import type { UserDetail } from "@/app/data/admin/get-user-detail";
+import type { UserDetail } from "../actions";
 
 interface UserDetailDrawerProps {
   user: UserDetail | null;

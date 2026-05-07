@@ -56,16 +56,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "../dummy-data";
 import { UserDetailDrawer } from "./user-detail-drawer";
-import type { AdminUser, UserListParams } from "@/app/data/admin/get-admin-users";
-import type { UserDetail } from "@/app/data/admin/get-user-detail";
+import type { AdminUser } from "@/app/data/admin/get-admin-users";
+import type { UserDetail } from "../actions";
 
-interface UsersTableProps {
-  initialUsers: AdminUser[];
-  total: number;
-  currentParams: UserListParams;
-}
-
-export function UsersTable({ initialUsers, total, currentParams }: UsersTableProps) {
+export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
   const [data] = React.useState(() => initialUsers);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -77,22 +71,18 @@ export function UsersTable({ initialUsers, total, currentParams }: UsersTablePro
   });
   const [selectedUser, setSelectedUser] = React.useState<UserDetail | null>(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [isLoadingUser, setIsLoadingUser] = React.useState(false);
 
   const handleUserClick = async (user: AdminUser) => {
-    setIsLoadingUser(true);
     setDrawerOpen(true);
 
     try {
-      // Import dynamically to avoid SSR issues
-      const { getUserDetail } = await import("@/app/data/admin/get-user-detail");
-      const userDetail = await getUserDetail(user.id);
+      // Import and call the server action
+      const { getUserDetailA } = await import("../actions");
+      const userDetail = await getUserDetailA(user.id);
       setSelectedUser(userDetail);
     } catch (error) {
       console.error("Failed to load user details:", error);
       setDrawerOpen(false);
-    } finally {
-      setIsLoadingUser(false);
     }
   };
 

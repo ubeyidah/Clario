@@ -1,7 +1,7 @@
-import "server-only";
-import { cache } from "react";
+"use server";
+
+import { requireAdmin } from "@/app/data/admin/require-admin";
 import { prisma } from "@/lib/db";
-import { requireAdmin } from "./require-admin";
 
 export type UserDetail = {
   id: string;
@@ -23,7 +23,7 @@ export type UserDetail = {
   coursesCreated?: number;
 };
 
-export const getUserDetail = cache(async (userId: string): Promise<UserDetail | null> => {
+export const getUserDetailA = async (userId: string): Promise<UserDetail | null> => {
   await requireAdmin();
 
   const user = await prisma.user.findUnique({
@@ -99,4 +99,4 @@ export const getUserDetail = cache(async (userId: string): Promise<UserDetail | 
     totalSpent,
     coursesCreated,
   };
-});
+};

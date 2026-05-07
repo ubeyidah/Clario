@@ -70,13 +70,11 @@ const UsersPage = ({ searchParams }: UsersPageProps) => {
 };
 
 async function RenderUsers({ params }: { params: UserListParams }) {
-  const { users, total } = await getAdminUsers(params);
+  const { users } = await getAdminUsers(params);
 
   return (
     <UsersTable
       initialUsers={users}
-      total={total}
-      currentParams={params}
     />
   );
 }
