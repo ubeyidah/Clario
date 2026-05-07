@@ -71,9 +71,11 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
   });
   const [selectedUser, setSelectedUser] = React.useState<UserDetail | null>(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [isLoadingUser, setIsLoadingUser] = React.useState(false);
 
   const handleUserClick = async (user: AdminUser) => {
     setDrawerOpen(true);
+    setIsLoadingUser(true);
 
     try {
       // Import and call the server action
@@ -82,7 +84,8 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
       setSelectedUser(userDetail);
     } catch (error) {
       console.error("Failed to load user details:", error);
-      setDrawerOpen(false);
+    } finally {
+      setIsLoadingUser(false);
     }
   };
 
@@ -445,7 +448,14 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
       <UserDetailDrawer
         user={selectedUser}
         open={drawerOpen}
-        onOpenChange={setDrawerOpen}
+        onOpenChange={(open) => {
+          setDrawerOpen(open);
+          if (!open) {
+            setSelectedUser(null);
+            setIsLoadingUser(false);
+          }
+        }}
+        isLoading={isLoadingUser}
       />
     </div>
   );
