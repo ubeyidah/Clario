@@ -57,6 +57,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "../dummy-data";
 import { UserDetailDrawer } from "./user-detail-drawer";
 import type { AdminUser, UserListParams } from "@/app/data/admin/get-admin-users";
+import type { UserDetail } from "@/app/data/admin/get-user-detail";
 
 interface UsersTableProps {
   initialUsers: AdminUser[];
@@ -74,8 +75,26 @@ export function UsersTable({ initialUsers, total, currentParams }: UsersTablePro
     pageIndex: 0,
     pageSize: 10,
   });
-  const [selectedUser, setSelectedUser] = React.useState<AdminUser | null>(null);
+  const [selectedUser, setSelectedUser] = React.useState<UserDetail | null>(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [isLoadingUser, setIsLoadingUser] = React.useState(false);
+
+  const handleUserClick = async (user: AdminUser) => {
+    setIsLoadingUser(true);
+    setDrawerOpen(true);
+
+    try {
+      // Import dynamically to avoid SSR issues
+      const { getUserDetail } = await import("@/app/data/admin/get-user-detail");
+      const userDetail = await getUserDetail(user.id);
+      setSelectedUser(userDetail);
+    } catch (error) {
+      console.error("Failed to load user details:", error);
+      setDrawerOpen(false);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  };
 
   // Create dynamic columns with click handlers
   const dynamicColumns = React.useMemo<ColumnDef<AdminUser>[]>(() => [
@@ -113,10 +132,7 @@ export function UsersTable({ initialUsers, total, currentParams }: UsersTablePro
         return (
           <div
             className="flex items-center gap-3 cursor-pointer hover:text-primary min-w-0"
-            onClick={() => {
-              setSelectedUser(user);
-              setDrawerOpen(true);
-            }}
+            onClick={() => handleUserClick(user)}
           >
             <Avatar className="h-8 w-8 flex-shrink-0">
               <AvatarImage src={user.image || undefined} alt={user.name} />
@@ -216,10 +232,7 @@ export function UsersTable({ initialUsers, total, currentParams }: UsersTablePro
                 <IconMail className="mr-2 h-4 w-4" />
                 Send email
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                setSelectedUser(user);
-                setDrawerOpen(true);
-              }}>
+              <DropdownMenuItem onClick={() => handleUserClick(user)}>
                 <IconUserCheck className="mr-2 h-4 w-4" />
                 View profile
               </DropdownMenuItem>
@@ -440,7 +453,7 @@ export function UsersTable({ initialUsers, total, currentParams }: UsersTablePro
       </div>
 
       <UserDetailDrawer
-        user={null} // TODO: Update drawer to accept AdminUser type
+        user={selectedUser}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
       />

@@ -23,10 +23,11 @@ import {
   IconActivity,
   IconClock,
 } from "@tabler/icons-react";
-import { UserType, formatDate } from "../dummy-data";
+import { formatDate } from "../dummy-data";
+import type { UserDetail } from "@/app/data/admin/get-user-detail";
 
 interface UserDetailDrawerProps {
-  user: UserType | null;
+  user: UserDetail | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -61,10 +62,10 @@ export function UserDetailDrawer({ user, open, onOpenChange }: UserDetailDrawerP
               <DrawerDescription className="text-base">{user.email}</DrawerDescription>
               <div className="flex gap-2 mt-2">
                 <Badge variant={roleColors[user.role as keyof typeof roleColors] || "outline"}>
-                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "No Role"}
                 </Badge>
-                <Badge variant={statusColors[user.status as keyof typeof statusColors]}>
-                  {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                <Badge variant={user.banned ? statusColors.banned : statusColors.active}>
+                  {user.banned ? "Inactive" : "Active"}
                 </Badge>
                 {user.emailVerified && (
                   <Badge variant="outline" className="text-green-600">
@@ -96,14 +97,14 @@ export function UserDetailDrawer({ user, open, onOpenChange }: UserDetailDrawerP
                     <label className="text-sm font-medium text-muted-foreground">Joined</label>
                     <p className="text-sm flex items-center gap-1">
                       <IconCalendar className="h-4 w-4" />
-                      {formatDate(user.createdAt)}
+                      {formatDate(user.createdAt.toISOString())}
                     </p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
                     <p className="text-sm flex items-center gap-1">
                       <IconClock className="h-4 w-4" />
-                      {formatDate(user.updatedAt)}
+                      {formatDate(user.updatedAt.toISOString())}
                     </p>
                   </div>
                   <div>
@@ -177,7 +178,7 @@ export function UserDetailDrawer({ user, open, onOpenChange }: UserDetailDrawerP
                       <label className="text-sm font-medium text-muted-foreground">Expires</label>
                       <p className="text-sm flex items-center gap-1">
                         <IconClock className="h-4 w-4" />
-                        {formatDate(user.banExpires)}
+                        {formatDate(user.banExpires!.toISOString())}
                       </p>
                     </div>
                   )}
