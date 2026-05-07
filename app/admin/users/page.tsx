@@ -5,8 +5,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Suspense } from "react";
 import { UsersTable } from "./_components/users-table";
 import { UsersTableSkeleton } from "./_components/users-table-skeleton";
+import { getAdminUsers } from "@/app/data/admin/get-admin-users";
+import type { UserListParams } from "@/app/data/admin/get-admin-users";
 
-const UsersPage = () => {
+interface UsersPageProps {
+  searchParams: {
+    search?: string;
+    status?: string;
+    role?: string;
+    page?: string;
+    pageSize?: string;
+  };
+}
+
+const UsersPage = ({ searchParams }: UsersPageProps) => {
+  const params: UserListParams = {
+    search: searchParams.search,
+    status: searchParams.status as "active" | "inactive" | "banned" | "all" | undefined,
+    role: searchParams.role as "admin" | "student" | "all" | undefined,
+    page: searchParams.page ? parseInt(searchParams.page) : 0,
+    pageSize: searchParams.pageSize ? parseInt(searchParams.pageSize) : 10,
+  };
+
   return (
     <main>
       <SiteHeader>
@@ -42,11 +62,23 @@ const UsersPage = () => {
         </div>
 
         <Suspense fallback={<UsersTableSkeleton />}>
-          <UsersTable />
+          <RenderUsers params={params} />
         </Suspense>
       </div>
     </main>
-  )
+  );
+};
+
+async function RenderUsers({ params }: { params: UserListParams }) {
+  const { users, total } = await getAdminUsers(params);
+
+  return (
+    <UsersTable
+      initialUsers={users}
+      total={total}
+      currentParams={params}
+    />
+  );
 }
 
 export default UsersPage;

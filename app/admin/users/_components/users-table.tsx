@@ -54,11 +54,18 @@ import {
 } from "@tabler/icons-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatDate, dummyUsers, UserType } from "../dummy-data";
+import { formatDate } from "../dummy-data";
 import { UserDetailDrawer } from "./user-detail-drawer";
+import type { AdminUser, UserListParams } from "@/app/data/admin/get-admin-users";
 
-export function UsersTable() {
-  const [data] = React.useState(() => dummyUsers);
+interface UsersTableProps {
+  initialUsers: AdminUser[];
+  total: number;
+  currentParams: UserListParams;
+}
+
+export function UsersTable({ initialUsers, total, currentParams }: UsersTableProps) {
+  const [data] = React.useState(() => initialUsers);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -67,11 +74,11 @@ export function UsersTable() {
     pageIndex: 0,
     pageSize: 10,
   });
-  const [selectedUser, setSelectedUser] = React.useState<UserType | null>(null);
+  const [selectedUser, setSelectedUser] = React.useState<AdminUser | null>(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   // Create dynamic columns with click handlers
-  const dynamicColumns = React.useMemo<ColumnDef<UserType>[]>(() => [
+  const dynamicColumns = React.useMemo<ColumnDef<AdminUser>[]>(() => [
     {
       id: "select",
       header: ({ table }) => (
@@ -138,7 +145,7 @@ export function UsersTable() {
 
         return (
           <Badge variant={variants[role as keyof typeof variants] || "outline"}>
-            {role.charAt(0).toUpperCase() + role.slice(1)}
+            {role ? role.charAt(0).toUpperCase() + role.slice(1) : "No Role"}
           </Badge>
         );
       },
@@ -151,10 +158,10 @@ export function UsersTable() {
         const statusConfig = {
           active: { variant: "default" as const, label: "Active" },
           inactive: { variant: "secondary" as const, label: "Inactive" },
-          banned: { variant: "destructive" as const, label: "Banned" }
         };
 
-        const config = statusConfig[user.status as keyof typeof statusConfig];
+        const status = user.banned ? "inactive" : "active";
+        const config = statusConfig[status];
 
         return (
           <Badge variant={config.variant}>
@@ -170,8 +177,8 @@ export function UsersTable() {
         const user = row.original;
         return (
           <div className="text-sm">
-            <div>{user.enrolledCourses} enrolled</div>
-            <div className="text-muted-foreground">{user.completedCourses} completed</div>
+            <div>{user._count.enrollments} enrolled</div>
+            <div className="text-muted-foreground">{user._count.courses} created</div>
           </div>
         );
       },
@@ -180,7 +187,7 @@ export function UsersTable() {
       accessorKey: "createdAt",
       header: "Joined",
       cell: ({ row }) => {
-        return formatDate(row.original.createdAt);
+        return formatDate(row.original.createdAt.toISOString());
       },
     },
     {
@@ -433,7 +440,7 @@ export function UsersTable() {
       </div>
 
       <UserDetailDrawer
-        user={selectedUser}
+        user={null} // TODO: Update drawer to accept AdminUser type
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
       />
