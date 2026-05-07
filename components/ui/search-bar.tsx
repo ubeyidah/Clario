@@ -6,7 +6,8 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { useDebounce } from "@/hooks/use-debouce";
-import { Search, XIcon } from "lucide-react"
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Search01Icon, Cancel01Icon } from '@hugeicons/core-free-icons';
 import { useEffect, useState } from "react";
 import { Spinner } from "./spinner";
 
@@ -30,7 +31,7 @@ const SearchBar = ({ handleChange, value = "", isLoading = false, placeholder = 
     <InputGroup>
       <InputGroupInput placeholder={placeholder} onChange={(e) => setSearchText(e.target.value)} value={searchText} disabled={isLoading} />
       <InputGroupAddon>
-        {isTypeing ? <Spinner /> : <Search />}
+        {isTypeing ? <Spinner /> : <HugeiconsIcon icon={Search01Icon} />}
       </InputGroupAddon>
       {searchText.trim() && <InputGroupAddon align="inline-end">
         <InputGroupButton
@@ -40,7 +41,7 @@ const SearchBar = ({ handleChange, value = "", isLoading = false, placeholder = 
             handleChange?.("");
           }}
         >
-          <XIcon />
+          <HugeiconsIcon icon={Cancel01Icon} />
         </InputGroupButton>
       </InputGroupAddon>}
     </InputGroup>

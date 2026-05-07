@@ -16,7 +16,8 @@ import {
   IconChartBar,
   IconClock,
 } from "@tabler/icons-react";
-import { Check, ChevronsUpDown, LockKeyholeIcon } from "lucide-react";
+import { HugeiconsIcon } from '@hugeicons/react';
+import { CheckmarkBadge01Icon, ArrowUpDownIcon, LockKeyIcon } from '@hugeicons/core-free-icons';
 import Image from "next/image";
 import { Suspense } from "react";
 import CourseDetailSkeleton from "./_components/course-detail-skeleton";
@@ -122,7 +123,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                         {chapter.lessons.length} Lesson
                         {chapter.lessons.length > 1 ? "s" : ""}
                       </Badge>
-                      <ChevronsUpDown className="size-4" />
+                      <HugeiconsIcon icon={ArrowUpDownIcon} className="size-4" />
                     </div>
                   </div>
                 </CollapsibleTrigger>
@@ -136,7 +137,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                       >
                         <div className="flex items-center gap-3">
                           <div className="size-8 flex items-center justify-center rounded-full bg-secondary/20 text-foreground">
-                            <LockKeyholeIcon className="size-4 text-neutral-500" />
+                            <HugeiconsIcon icon={LockKeyIcon} className="size-4 text-neutral-500" />
                           </div>
                           <h4>{lesson.title}</h4>
                         </div>
@@ -221,7 +222,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                   className="pl-2 text-sm flex items-center gap-2"
                 >
                   <div className="bg-green-600/20 rounded-full size-5 flex items-center justify-center mr-2">
-                    <Check className="size-3 text-green-300" />
+                    <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-3 text-green-300" />
                   </div>
                   <p>{feature}</p>
                 </div>

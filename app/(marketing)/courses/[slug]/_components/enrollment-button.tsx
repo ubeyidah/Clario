@@ -5,7 +5,8 @@ import { enrollInCourseA } from "../actions";
 import { tryCatch } from "@/hooks/try-catch";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Loading01Icon } from '@hugeicons/core-free-icons';
 import Link from "next/link";
 
 interface EnrollmentButtonProps {
@@ -52,7 +53,7 @@ const EnrollmentButton = ({ courseId, isEnrolled }: EnrollmentButtonProps) => {
     <Button className="w-full" onClick={handleEnroll} disabled={isPending}>
       {isPending ? (
         <>
-          <Loader2 className="size-4 animate-spin" />
+          <HugeiconsIcon icon={Loading01Icon} className="size-4 animate-spin" />
           Processing...
         </>
       ) : (
