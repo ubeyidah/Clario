@@ -2,6 +2,7 @@
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import { prisma } from "@/lib/db";
+import { getAdminUsers, type UserListParams, type AdminUser } from "@/app/data/admin/get-admin-users";
 
 export type UserDetail = {
   id: string;
@@ -99,4 +100,111 @@ export const getUserDetailA = async (userId: string): Promise<UserDetail | null>
     totalSpent,
     coursesCreated,
   };
+};
+
+export const exportUsersAsCSV = async (params: UserListParams): Promise<string> => {
+  await requireAdmin();
+
+  const { users } = await getAdminUsers(params);
+
+  const headers = [
+    'ID',
+    'Name',
+    'Email',
+    'Email Verified',
+    'Role',
+    'Status',
+    'Joined',
+    'Enrolled Courses',
+    'Courses Created'
+  ];
+
+  const csvData = users.map((user: AdminUser) => [
+    user.id,
+    user.name,
+    user.email,
+    user.emailVerified ? 'Yes' : 'No',
+    user.role || '',
+    user.banned ? 'Banned' : 'Active',
+    user.createdAt.toISOString(),
+    user._count.enrollments,
+    user._count.courses
+  ]);
+
+  const csvContent = [headers, ...csvData]
+    .map((row: (string | number | boolean)[]) => row.map((field: string | number | boolean) => `"${field}"`).join(','))
+    .join('\n');
+
+  return csvContent;
+};
+
+export const exportUsersAsJSON = async (params: UserListParams): Promise<string> => {
+  await requireAdmin();
+
+  const { users } = await getAdminUsers(params);
+
+  const jsonData = users.map((user: AdminUser) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    emailVerified: user.emailVerified,
+    role: user.role,
+    status: user.banned ? 'banned' : 'active',
+    createdAt: user.createdAt.toISOString(),
+    enrolledCourses: user._count.enrollments,
+    coursesCreated: user._count.courses
+  }));
+
+  return JSON.stringify(jsonData, null, 2);
+};
+
+export type UserSession = {
+  id: string;
+  token: string;
+  expiresAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  ipAddress: string | null;
+  userAgent: string | null;
+  impersonatedBy: string | null;
+};
+
+export const getUserSessions = async (userId: string): Promise<UserSession[]> => {
+  "use server";
+  await requireAdmin();
+  
+  const sessions = await prisma.session.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      token: true,
+      expiresAt: true,
+      createdAt: true,
+      updatedAt: true,
+      ipAddress: true,
+      userAgent: true,
+      impersonatedBy: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return sessions;
+};
+
+export const revokeUserSession = async (sessionId: string) => {
+  "use server";
+  await requireAdmin();
+
+  await prisma.session.delete({
+    where: { id: sessionId },
+  });
+};
+
+export const revokeAllUserSessions = async (userId: string) => {
+  "use server";
+  await requireAdmin();
+
+  await prisma.session.deleteMany({
+    where: { userId },
+  });
 };
