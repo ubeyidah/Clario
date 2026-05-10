@@ -344,17 +344,22 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
     const users = selectedRows.map(row => row.original);
     
+    const escapeCSV = (field: string | number | boolean): string => {
+      const str = String(field);
+      return `"${str.replace(/"/g, '""')}"`;
+    };
+    
     const csvContent = [
       ['ID', 'Name', 'Email', 'Role', 'Status', 'Enrolled', 'Created'].join(','),
       ...users.map(u => [
         u.id,
-        `"${u.name}"`,
-        `"${u.email}"`,
+        u.name,
+        u.email,
         u.role || '',
         u.banned ? 'Banned' : 'Active',
         u._count.enrollments,
         u.createdAt.toISOString()
-      ].join(','))
+      ].map(escapeCSV).join(','))
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
