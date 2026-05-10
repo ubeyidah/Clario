@@ -50,17 +50,28 @@ import {
   IconShield,
   IconShieldOff,
   IconUserCheck,
-  IconUserX,
+  IconX,
+  IconDownload,
 } from "@tabler/icons-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "../dummy-data";
 import { UserDetailDrawer } from "./user-detail-drawer";
+import { BanDialog } from "./ban-dialog";
+import { SendEmailSheet } from "./send-email-sheet";
+import { SessionsSheet } from "./sessions-sheet";
 import type { AdminUser } from "@/app/data/admin/get-admin-users";
 import type { UserDetail } from "../actions";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
-  const [data] = React.useState(() => initialUsers);
+  const router = useRouter();
+  const [data, setData] = React.useState(initialUsers);
+
+  React.useEffect(() => {
+    setData(initialUsers);
+  }, [initialUsers]);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -72,6 +83,15 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
   const [selectedUser, setSelectedUser] = React.useState<UserDetail | null>(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [isLoadingUser, setIsLoadingUser] = React.useState(false);
+  const [banDialogOpen, setBanDialogOpen] = React.useState(false);
+  const [banUserIds, setBanUserIds] = React.useState<string[]>([]);
+  const [sendEmailOpen, setSendEmailOpen] = React.useState(false);
+  const [emailUser, setEmailUser] = React.useState<{ email: string; name: string } | null>(null);
+  const [sessionsOpen, setSessionsOpen] = React.useState(false);
+  const [sessionUser, setSessionUser] = React.useState<{ id: string; name: string } | null>(null);
+
+  const { data: session } = authClient.useSession();
+  const currentUserId = session?.user?.id;
 
   const handleUserClick = async (user: AdminUser) => {
     setDrawerOpen(true);
@@ -87,6 +107,11 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
     } finally {
       setIsLoadingUser(false);
     }
+  };
+
+  const openBanDialog = (userIds: string[]) => {
+    setBanUserIds(userIds);
+    setBanDialogOpen(true);
   };
 
   // Create dynamic columns with click handlers
@@ -147,14 +172,15 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
       header: "Role",
       cell: ({ row }) => {
         const role = row.original.role;
+        const displayRole = role === "admin" ? "Admin" : "Student";
         const variants = {
           admin: "destructive",
           student: "secondary"
         } as const;
 
         return (
-          <Badge variant={variants[role as keyof typeof variants] || "outline"}>
-            {role ? role.charAt(0).toUpperCase() + role.slice(1) : "No Role"}
+          <Badge variant={variants[role as keyof typeof variants] || "secondary"}>
+            {displayRole}
           </Badge>
         );
       },
@@ -164,19 +190,12 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
       header: "Status",
       cell: ({ row }) => {
         const user = row.original;
-        const statusConfig = {
-          active: { variant: "default" as const, label: "Active" },
-          inactive: { variant: "secondary" as const, label: "Inactive" },
-        };
 
-        const status = user.banned ? "inactive" : "active";
-        const config = statusConfig[status];
+        if (user.banned) {
+          return <Badge variant="destructive">Banned</Badge>;
+        }
 
-        return (
-          <Badge variant={config.variant}>
-            {config.label}
-          </Badge>
-        );
+        return <Badge variant="default">Active</Badge>;
       },
     },
     {
@@ -204,6 +223,21 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
       cell: ({ row }) => {
         const user = row.original;
 
+        const handleUnban = async (userId: string) => {
+          try {
+            const { authClient } = await import("@/lib/auth-client");
+            await authClient.admin.unbanUser({ userId });
+            toast.success("User has been unbanned");
+            setData(prev => prev.map(user => 
+              user.id === userId ? { ...user, banned: false } : user
+            ));
+            router.refresh();
+          } catch (error) {
+            console.error("Failed to unban user:", error);
+            toast.error("Failed to unban user");
+          }
+        };
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -215,13 +249,25 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
                 <IconDotsVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+<DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.id)}>
+              <DropdownMenuItem 
+                disabled={currentUserId === user.id}
+                onClick={() => {
+                  navigator.clipboard.writeText(user.id);
+                  toast.success("User ID copied to clipboard");
+                }}
+              >
                 Copy user ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem 
+                disabled={currentUserId === user.id}
+                onClick={() => {
+                  setEmailUser({ email: user.email, name: user.name });
+                  setSendEmailOpen(true);
+                }}
+              >
                 <IconMail className="mr-2 h-4 w-4" />
                 Send email
               </DropdownMenuItem>
@@ -229,28 +275,41 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
                 <IconUserCheck className="mr-2 h-4 w-4" />
                 View profile
               </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => {
+                  setSessionUser({ id: user.id, name: user.name });
+                  setSessionsOpen(true);
+                }}
+              >
+                <IconShield className="mr-2 h-4 w-4" />
+                Sessions
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               {user.banned ? (
-                <DropdownMenuItem className="text-green-600">
+                <DropdownMenuItem 
+                  className="text-green-600" 
+                  disabled={currentUserId === user.id}
+                  onClick={() => handleUnban(user.id)}
+                >
                   <IconShieldOff className="mr-2 h-4 w-4" />
-                  Unban user
+                  Unban
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem className="text-red-600">
+                <DropdownMenuItem 
+                  variant="destructive" 
+                  disabled={currentUserId === user.id}
+                  onClick={() => openBanDialog([user.id])}
+                >
                   <IconShield className="mr-2 h-4 w-4" />
-                  Ban user
+                  Ban
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem className="text-orange-600">
-                <IconUserX className="mr-2 h-4 w-4" />
-                Deactivate
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
       },
     },
-  ], []);
+  ], [router, currentUserId]);
 
   const table = useReactTable({
     data,
@@ -273,70 +332,62 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const handleBulkAction = (action: string) => {
-    const selectedRows = table.getFilteredSelectedRowModel().rows;
-    const userIds = selectedRows.map(row => row.original.id);
+  const selectedCount = table.getFilteredSelectedRowModel().rows.length;
 
-    toast.success(`${action} applied to ${userIds.length} users`);
+  const handleExportSelected = () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    const users = selectedRows.map(row => row.original);
+    
+    const csvContent = [
+      ['ID', 'Name', 'Email', 'Role', 'Status', 'Enrolled', 'Created'].join(','),
+      ...users.map(u => [
+        u.id,
+        `"${u.name}"`,
+        `"${u.email}"`,
+        u.role || '',
+        u.banned ? 'Banned' : 'Active',
+        u._count.enrollments,
+        u.createdAt.toISOString()
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'selected-users.csv';
+    a.click();
+    URL.revokeObjectURL(url);
     setRowSelection({});
+    toast.success(`Exported ${users.length} users`);
   };
 
-  const selectedCount = table.getFilteredSelectedRowModel().rows.length;
+  const handleBanSelected = () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    const userIds = selectedRows.map(row => row.original.id);
+    
+    if (currentUserId && userIds.includes(currentUserId)) {
+      toast.error("You cannot ban yourself");
+      return;
+    }
+    
+    openBanDialog(userIds);
+  };
+
+  const selectedUserIds = table.getFilteredSelectedRowModel().rows.map(row => row.original.id);
+  const includesCurrentUser = Boolean(currentUserId && selectedUserIds.includes(currentUserId));
 
   return (
     <div className="space-y-4">
-      {selectedCount > 0 && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-background border rounded-lg shadow-lg p-4 min-w-fit">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">
-              {selectedCount} user{selectedCount !== 1 ? 's' : ''} selected
-            </span>
-            <div className="flex gap-2 ml-auto">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleBulkAction("Activated")}
-              >
-                <IconUserCheck className="mr-2 h-4 w-4" />
-                Activate
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => handleBulkAction("Deactivated")}
-              >
-                <IconUserX className="mr-2 h-4 w-4" />
-                Deactivate
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => handleBulkAction("Banned")}
-              >
-                <IconShield className="mr-2 h-4 w-4" />
-                Ban
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleBulkAction("Emailed")}
-              >
-                <IconMail className="mr-2 h-4 w-4" />
-                Send Email
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="rounded-md border overflow-x-auto">
         <Table className="min-w-full">
-          <TableHeader>
+          <TableHeader className="[&_tr]:bg-muted/50 [&_tr]:hover:bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="whitespace-nowrap">
+                    <TableHead key={header.id} className="whitespace-nowrap [&_tr]:hover:bg-muted/50">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -445,6 +496,44 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
         </div>
       </div>
 
+      {selectedCount > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+          <div className="flex items-center gap-3 bg-background border rounded-lg shadow-lg px-4 py-2">
+            <span className="text-sm font-medium whitespace-nowrap">
+              {selectedCount} selected
+            </span>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handleBanSelected}
+                disabled={includesCurrentUser}
+                title={includesCurrentUser ? "You cannot ban yourself" : undefined}
+              >
+                <IconShield className="mr-1 h-4 w-4" />
+                Ban
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleExportSelected}
+              >
+                <IconDownload className="mr-1 h-4 w-4" />
+                Export
+              </Button>
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0"
+              onClick={() => setRowSelection({})}
+            >
+              <IconX className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       <UserDetailDrawer
         user={selectedUser}
         open={drawerOpen}
@@ -457,6 +546,38 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
         }}
         isLoading={isLoadingUser}
       />
+
+      <BanDialog
+        open={banDialogOpen}
+        onOpenChange={setBanDialogOpen}
+        userIds={banUserIds}
+        userNames={data.filter(u => banUserIds.includes(u.id)).map(u => u.name)}
+        onBanSuccess={(bannedUserIds) => {
+          setData(prev => prev.map(user => 
+            bannedUserIds.includes(user.id) 
+              ? { ...user, banned: true } 
+              : user
+          ));
+        }}
+      />
+
+      {emailUser && (
+        <SendEmailSheet
+          open={sendEmailOpen}
+          onOpenChange={setSendEmailOpen}
+          userEmail={emailUser.email}
+          userName={emailUser.name}
+        />
+      )}
+
+      {sessionUser && (
+        <SessionsSheet
+          open={sessionsOpen}
+          onOpenChange={setSessionsOpen}
+          userId={sessionUser.id}
+          userName={sessionUser.name}
+        />
+      )}
     </div>
   );
 }
