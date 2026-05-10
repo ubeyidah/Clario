@@ -227,11 +227,8 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
       cell: ({ row }) => {
         const user = row.original;
 
-        const handleUnban = async (userId: string) => {
+const handleUnban = async (userId: string) => {
           try {
-         const handleUnban = async (userId: string) => {
-           try {
-             await authClient.admin.unbanUser({ userId });
             await authClient.admin.unbanUser({ userId });
             toast.success("User has been unbanned");
             setData(prev => prev.map(user => 

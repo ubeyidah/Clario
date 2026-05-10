@@ -210,8 +210,8 @@ export function UserDetailDrawer({ user, open, onOpenChange, isLoading = false }
                         <div className="text-sm text-muted-foreground">Enrolled Courses</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold">{user.completedCourses}</div>
-                        <div className="text-sm text-muted-foreground">Completed Courses</div>
+                        <div className="text-2xl font-bold">{user.activeEnrollments}</div>
+                        <div className="text-sm text-muted-foreground">Active Enrollments</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold">{user.totalSpent.toLocaleString()} ETB</div>
@@ -223,7 +223,7 @@ export function UserDetailDrawer({ user, open, onOpenChange, isLoading = false }
                         <Separator className="my-4" />
                         <div className="text-center">
                           <div className="text-2xl font-bold">
-                            {Math.round((user.completedCourses / user.enrolledCourses) * 100)}%
+                            {Math.round((user.activeEnrollments / user.enrolledCourses) * 100)}%
                           </div>
                           <div className="text-sm text-muted-foreground">Completion Rate</div>
                         </div>

@@ -19,7 +19,7 @@ export type UserDetail = {
   lastLogin: string | null;
   totalLogins: number;
   enrolledCourses: number;
-  completedCourses: number;
+  activeEnrollments: number;
   totalSpent: number;
   coursesCreated?: number;
 };
@@ -76,7 +76,7 @@ export const getUserDetailA = async (userId: string): Promise<UserDetail | null>
   });
 
   const enrolledCourses = enrollments.length;
-  const completedCourses = enrollments.filter(e => e.status === "ACTIVE").length;
+  const activeEnrollments = enrollments.filter(e => e.status === "ACTIVE").length;
   const totalSpent = enrollments.reduce((sum, e) => sum + e.amount, 0);
 
   const coursesCreated = user.role === "admin" ? user._count.courses : undefined;
@@ -96,7 +96,7 @@ export const getUserDetailA = async (userId: string): Promise<UserDetail | null>
     lastLogin: user.sessions[0]?.createdAt?.toISOString() || null,
     totalLogins,
     enrolledCourses,
-    completedCourses,
+    activeEnrollments,
     totalSpent,
     coursesCreated,
   };
