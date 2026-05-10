@@ -63,7 +63,7 @@ export function UserDetailDrawer({ user, open, onOpenChange, isLoading = false }
                   <Avatar className="h-16 w-16">
                     <AvatarImage src={user.image || undefined} alt={user.name} />
                     <AvatarFallback className="text-lg">
-                      {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                      {user.name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
