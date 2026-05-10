@@ -155,7 +155,11 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
             <Avatar className="h-8 w-8 flex-shrink-0">
               <AvatarImage src={user.image || undefined} alt={user.name} />
               <AvatarFallback>
-                {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                <AvatarFallback>
+                {user.name.trim() 
+                  ? user.name.trim().split(/\s+/).map(n => n[0]).join('').toUpperCase().slice(0, 2)
+                  : '??'}
+                </AvatarFallback>
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0">
