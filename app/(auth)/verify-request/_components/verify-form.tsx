@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
 import { Spinner } from "@/components/ui/spinner";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,6 +14,7 @@ import { toast } from "sonner";
 const VerifyForm = () => {
   const [otp, setOtp] = useState("")
   const [verifyPending, startVerifyTransition] = useTransition()
+  const [isBanned, setIsBanned] = useState(false)
   const params = useSearchParams()
   const email = params.get("email") as string
   const isCompletedOtp = otp.length === 6
@@ -27,9 +29,13 @@ const VerifyForm = () => {
         fetchOptions: {
           onSuccess: () => {
             router.replace("/")
-          }
-          , onError: () => {
-            toast.error("Verification failed. The code may have expired or is incorrect. Please try again.")
+          },
+          onError: ({ error }) => {
+            if (error?.code === "BANNED_USER") {
+              setIsBanned(true)
+            } else {
+              toast.error("Verification failed. The code may have expired or is incorrect. Please try again.")
+            }
           }
         }
       })
@@ -40,11 +46,19 @@ const VerifyForm = () => {
     <Card className="bg-transparent border-none">
       <CardHeader className="text-center">
         <CardTitle>Verify Your <Link href="https://gmail.com" className="text-primary hover:underline">Email</Link></CardTitle>
-        <CardDescription>We’ve sent a one-time code (OTP) to your email. Enter it below to complete your sign-in. The code is valid for 5 minutes.</CardDescription>
+        <CardDescription>We’ve sent a one-time code to your email. Enter it below to complete your sign-in. The code is valid for 5 minutes.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        {isBanned && (
+          <Alert variant="destructive">
+            <AlertTitle>Account Suspended</AlertTitle>
+            <AlertDescription>
+              Your account has been suspended. Contact support for more information.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="flex justify-center">
-          <InputOTP maxLength={6} value={otp} onChange={(value) => setOtp(value)}>
+          <InputOTP maxLength={6} value={otp} onChange={(value) => setOtp(value)} disabled={isBanned}>
             <InputOTPGroup>
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
@@ -58,8 +72,10 @@ const VerifyForm = () => {
             </InputOTPGroup>
           </InputOTP>
         </div>
-        <p className="text-center text-sm text-muted-foreground">Didn’t receive the code? Check your spam folder or request a new one.</p>
-        <Button className="w-full mt-2" disabled={verifyPending || !isCompletedOtp} onClick={verifyOtp}>
+        {!isBanned && (
+          <p className="text-center text-sm text-muted-foreground">Didn’t receive the code? Check your spam folder or request a new one.</p>
+        )}
+        <Button className="w-full mt-2" disabled={verifyPending || !isCompletedOtp || isBanned} onClick={verifyOtp}>
           {
             verifyPending ? <Spinner /> : "Verify OTP"
           }
@@ -69,4 +85,4 @@ const VerifyForm = () => {
   )
 }
 
-export default VerifyForm; 
+export default VerifyForm;
