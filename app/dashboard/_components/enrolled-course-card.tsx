@@ -6,15 +6,16 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { formatDuration } from "@/lib/utils";
+import { useFileKeyToUrl } from "@/hooks/use-file-key-to-url";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { PlayIcon, CheckmarkBadge01Icon } from "@hugeicons/core-free-icons";
+import { PlayIcon, CheckmarkBadge01Icon, Certificate01Icon } from "@hugeicons/core-free-icons";
 
 interface EnrolledCourseCardProps {
   course: EnrolledCourseItem;
 }
 
 export function EnrolledCourseCard({ course }: EnrolledCourseCardProps) {
-  const thumbnailUrl = `https://clario.t3.storage.dev/${course.fileKey}`;
+  const thumbnailUrl = useFileKeyToUrl(course.fileKey);
   const targetHref = course.nextLessonId
     ? `/learn/${course.id}/${course.nextLessonId}`
     : `/learn/${course.id}`;
@@ -73,27 +74,56 @@ export function EnrolledCourseCard({ course }: EnrolledCourseCardProps) {
         </CardContent>
       </div>
 
-      <div className="p-4 pt-0">
-        <Link
-          href={targetHref}
-          className={buttonVariants({
-            variant: course.isCompleted ? "outline" : "default",
-            size: "sm",
-            className: "w-full rounded-xl gap-2",
-          })}
-        >
-          {course.isCompleted ? (
-            <>
-              <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-4" />
-              Watch Again
-            </>
-          ) : (
-            <>
-              <HugeiconsIcon icon={PlayIcon} className="size-4 fill-current" />
-              Continue Lesson
-            </>
-          )}
-        </Link>
+      <div className="p-4 pt-0 space-y-2">
+        {course.totalLessons === 0 ? (
+          <Link
+            href={`/courses/${course.slug}`}
+            className={buttonVariants({
+              variant: "outline",
+              size: "sm",
+              className: "w-full rounded-xl",
+            })}
+          >
+            Curriculum Coming Soon
+          </Link>
+        ) : course.isCompleted ? (
+          <div className="grid grid-cols-2 gap-2">
+            <Link
+              href={`/learn/${course.id}/certificate`}
+              className={buttonVariants({
+                variant: "default",
+                size: "sm",
+                className: "w-full rounded-xl gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs",
+              })}
+            >
+              <HugeiconsIcon icon={Certificate01Icon} className="size-3.5" />
+              Certificate
+            </Link>
+            <Link
+              href={targetHref}
+              className={buttonVariants({
+                variant: "outline",
+                size: "sm",
+                className: "w-full rounded-xl gap-1.5 text-xs",
+              })}
+            >
+              <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-3.5" />
+              Review
+            </Link>
+          </div>
+        ) : (
+          <Link
+            href={targetHref}
+            className={buttonVariants({
+              variant: "default",
+              size: "sm",
+              className: "w-full rounded-xl gap-2",
+            })}
+          >
+            <HugeiconsIcon icon={PlayIcon} className="size-4 fill-current" />
+            Continue Lesson
+          </Link>
+        )}
       </div>
     </Card>
   );

@@ -96,21 +96,24 @@ export const getEnrolledCourses = async (): Promise<StudentDashboardData> => {
 
   // Collect all lesson IDs across enrolled courses to fetch user progress in a single query
   const allLessonIds = enrollments.flatMap((enrollment) =>
-    enrollment.course.chapters.flatMap((chapter) =>
-      chapter.lessons.map((lesson) => lesson.id),
+    (enrollment.course?.chapters || []).flatMap((chapter) =>
+      (chapter.lessons || []).map((lesson) => lesson.id),
     ),
   );
 
-  const progressRecords = await prisma.lessonProgress.findMany({
-    where: {
-      userId: user.id,
-      lessonId: { in: allLessonIds },
-      completed: true,
-    },
-    select: {
-      lessonId: true,
-    },
-  });
+  const progressRecords =
+    allLessonIds.length > 0
+      ? await prisma.lessonProgress.findMany({
+          where: {
+            userId: user.id,
+            lessonId: { in: allLessonIds },
+            completed: true,
+          },
+          select: {
+            lessonId: true,
+          },
+        })
+      : [];
 
   const completedLessonIdSet = new Set(
     progressRecords.map((record) => record.lessonId),
@@ -120,61 +123,63 @@ export const getEnrolledCourses = async (): Promise<StudentDashboardData> => {
   let inProgressCoursesCount = 0;
   let totalHours = 0;
 
-  const courses: EnrolledCourseItem[] = enrollments.map((enrollment) => {
-    const course = enrollment.course;
-    totalHours += course.duration || 0;
+  const courses: EnrolledCourseItem[] = enrollments
+    .filter((enrollment) => !!enrollment.course)
+    .map((enrollment) => {
+      const course = enrollment.course;
+      totalHours += course.duration || 0;
 
-    const flattenedLessons = course.chapters.flatMap(
-      (chapter) => chapter.lessons,
-    );
-    const totalLessons = flattenedLessons.length;
-    const completedCount = flattenedLessons.filter((lesson) =>
-      completedLessonIdSet.has(lesson.id),
-    ).length;
+      const flattenedLessons = (course.chapters || []).flatMap(
+        (chapter) => chapter.lessons || [],
+      );
+      const totalLessons = flattenedLessons.length;
+      const completedCount = flattenedLessons.filter((lesson) =>
+        completedLessonIdSet.has(lesson.id),
+      ).length;
 
-    const progressPercentage =
-      totalLessons === 0
-        ? 0
-        : Math.round((completedCount / totalLessons) * 100);
+      const progressPercentage =
+        totalLessons === 0
+          ? 0
+          : Math.round((completedCount / totalLessons) * 100);
 
-    const isCompleted = totalLessons > 0 && completedCount === totalLessons;
+      const isCompleted = totalLessons > 0 && completedCount === totalLessons;
 
-    if (isCompleted) {
-      completedCoursesCount += 1;
-    } else if (totalLessons > 0) {
-      inProgressCoursesCount += 1;
-    }
+      if (isCompleted) {
+        completedCoursesCount += 1;
+      } else if (totalLessons > 0) {
+        inProgressCoursesCount += 1;
+      }
 
-    // Identify the next lesson to continue: first uncompleted lesson in order
-    const nextUncompletedLesson = flattenedLessons.find(
-      (lesson) => !completedLessonIdSet.has(lesson.id),
-    );
-    const nextLessonId =
-      nextUncompletedLesson?.id ||
-      (flattenedLessons.length > 0 ? flattenedLessons[0].id : null);
+      // Identify the next lesson to continue: first uncompleted lesson in order
+      const nextUncompletedLesson = flattenedLessons.find(
+        (lesson) => !completedLessonIdSet.has(lesson.id),
+      );
+      const nextLessonId =
+        nextUncompletedLesson?.id ||
+        (flattenedLessons.length > 0 ? flattenedLessons[0].id : null);
 
-    return {
-      id: course.id,
-      title: course.title,
-      slug: course.slug,
-      fileKey: course.fileKey,
-      duration: course.duration,
-      level: course.level,
-      category: course.category,
-      shortDescription: course.shortDescription,
-      totalLessons,
-      completedLessons: completedCount,
-      progressPercentage,
-      isCompleted,
-      nextLessonId,
-      enrolledAt: enrollment.createdAt,
-    };
-  });
+      return {
+        id: course.id,
+        title: course.title || "Untitled Course",
+        slug: course.slug,
+        fileKey: course.fileKey || "",
+        duration: course.duration || 0,
+        level: course.level,
+        category: course.category || "General",
+        shortDescription: course.shortDescription || "",
+        totalLessons,
+        completedLessons: completedCount,
+        progressPercentage,
+        isCompleted,
+        nextLessonId,
+        enrolledAt: enrollment.createdAt,
+      };
+    });
 
   return {
     courses,
     stats: {
-      totalCourses: enrollments.length,
+      totalCourses: courses.length,
       completedCourses: completedCoursesCount,
       inProgressCourses: inProgressCoursesCount,
       totalHours: Math.round(totalHours * 10) / 10,

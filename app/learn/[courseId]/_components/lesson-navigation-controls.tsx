@@ -12,6 +12,7 @@ import {
   Tick01Icon,
   CheckmarkBadge01Icon,
   Loading01Icon,
+  Certificate01Icon,
 } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { tryCatch } from "@/hooks/try-catch";
@@ -51,6 +52,9 @@ export function LessonNavigationControls({
         // Auto-navigate to next lesson if completing and next exists
         if (!isCompleted && nextLesson) {
           router.push(`/learn/${courseId}/${nextLesson.id}`);
+        } else if (!isCompleted && !nextLesson) {
+          // Finished the course!
+          router.push(`/learn/${courseId}/certificate`);
         }
       } else {
         toast.error(result?.message || "Error updating progress");
@@ -96,7 +100,7 @@ export function LessonNavigationControls({
           {isCompleted ? "Completed" : "Mark as Complete"}
         </Button>
 
-        {nextLesson && (
+        {nextLesson ? (
           <Link
             href={`/learn/${courseId}/${nextLesson.id}`}
             className={buttonVariants({
@@ -107,6 +111,17 @@ export function LessonNavigationControls({
             <span className="hidden sm:inline">Next:</span>
             <span className="max-w-[150px] truncate">{nextLesson.title}</span>
             <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
+          </Link>
+        ) : (
+          <Link
+            href={`/learn/${courseId}/certificate`}
+            className={buttonVariants({
+              size: "sm",
+              className: "rounded-xl gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white",
+            })}
+          >
+            <HugeiconsIcon icon={Certificate01Icon} className="size-4" />
+            <span>Certificate</span>
           </Link>
         )}
       </div>

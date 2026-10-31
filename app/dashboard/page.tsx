@@ -28,7 +28,9 @@ async function StudentDashboardContent() {
     courses[0] ||
     null;
 
-  const displayName = user.name || user.email.split("@")[0];
+  const displayName =
+    user.name?.trim() ||
+    (user.email ? user.email.split("@")[0] : "Student");
 
   return (
     <Wrapper as="main" className="py-8 space-y-8">

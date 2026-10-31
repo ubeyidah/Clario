@@ -8,8 +8,32 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "clario.t3.storage.dev",
-        port: "",
-        pathname: "**",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.storage.dev",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "avatar.vercel.sh",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
       },
     ],
   },
