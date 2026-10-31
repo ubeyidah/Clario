@@ -45,3 +45,7 @@ export const lessonSchema = z.object({
   thumbnailFileKey: z.string().min(3, "Upload a thumbnail image.").optional(),
 })
 
+export const lessonProgressSchema = z.object({
+  lessonId: z.string().min(1, "Lesson ID is required"),
+  completed: z.boolean(),
+})

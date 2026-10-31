@@ -8,8 +8,8 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 
 | Ticket ID | Title | Branch | Status |
 |---|---|---|:---:|
-| **TICK-001** | Next.js 16.4 Upgrade, Schema Extension, Stripe Product ID & Currency Fix | `fix/phase-1-core-fixes-and-schema` | 🔄 In Progress |
-| **TICK-002** | Student Data Access Layer & Progress Mutation Actions | `feat/phase-2-student-dal-and-actions` | ⏳ Planned |
+| **TICK-001** | Next.js 16.4 Upgrade, Schema Extension, Stripe Product ID & Currency Fix | `fix/phase-1-core-fixes-and-schema` | ✅ Merged (#15) |
+| **TICK-002** | Student Data Access Layer & Progress Mutation Actions | `feat/phase-2-student-dal-and-actions` | 🔄 In Progress |
 | **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | ⏳ Planned |
 | **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | ⏳ Planned |
 
@@ -18,6 +18,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-001: Next.js 16.4 Upgrade, Schema Extension, Stripe Product ID & Currency Fix
 
 - **Branch**: `fix/phase-1-core-fixes-and-schema`
+- **Status**: ✅ Merged (PR #15)
 - **Scope**:
   1. **Next.js Upgrade**:
      - Upgrade `next` and `eslint-config-next` to `16.4.3`.
@@ -39,6 +40,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-002: Student Data Access Layer & Progress Mutation Actions
 
 - **Branch**: `feat/phase-2-student-dal-and-actions`
+- **Status**: 🔄 In Progress
 - **Scope**:
   1. `app/data/student/get-enrolled-courses.ts`:
      - Fetch active user enrollments with total lessons, completed lessons count, progress %, and next uncompleted lesson ID.
@@ -54,6 +56,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-003: Student Learning Dashboard (`/dashboard`)
 
 - **Branch**: `feat/phase-3-student-dashboard`
+- **Status**: ⏳ Planned
 - **Scope**:
   1. Layout: `app/dashboard/layout.tsx` with student header and user menu.
   2. Page: `app/dashboard/page.tsx` displaying:
@@ -67,6 +70,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-004: Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`)
 
 - **Branch**: `feat/phase-4-classroom-player`
+- **Status**: ⏳ Planned
 - **Scope**:
   1. Classroom Route: `app/learn/[courseId]/[lessonId]/page.tsx`.
   2. HTML5 Video Player streaming from Tigris/S3 bucket.
