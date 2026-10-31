@@ -163,7 +163,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
               </span>
             </div>
             <Separator className="my-2" />
-            <div className="space-y-3 mb-6  rounded-lg p-3">
+            <div className="space-y-3 mb-6 rounded-lg p-3">
               <h4 className="font-medium">What you will get</h4>
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                   <div>
                     <p className="text-sm font-medium">Course Duration</p>
                     <p className="text-sm text-muted-foreground">
-                      {formatDuration(course.duration)} hours
+                      {formatDuration(course.duration)}
                     </p>
                   </div>
                 </div>
@@ -182,7 +182,7 @@ async function RenderCourseDetail({ slug }: { slug: string }) {
                     <IconChartBar className="size-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Diffcuality Level</p>
+                    <p className="text-sm font-medium">Difficulty Level</p>
                     <p className="text-sm text-muted-foreground">
                       {course.level}
                     </p>
