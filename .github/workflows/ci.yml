@@ -26,11 +26,28 @@ jobs:
 
       - name: Install dependencies
         env:
-          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_db # Note: This is a placeholder URL for type generation only; CI doesn't need a real database connection for client generation.
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_db
         run: pnpm install
 
       - name: Lint
         run: pnpm lint
 
       - name: Build
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_db
+          BETTER_AUTH_URL: http://localhost:3000
+          GITHUB_CLIENT_ID: dummy
+          GITHUB_CLIENT_SECRET: dummy
+          GOOGLE_CLIENT_ID: dummy
+          GOOGLE_CLIENT_SECRET: dummy
+          RESEND_API_KEY: re_dummy
+          ARCJET_KEY: ajkey_dummy
+          AWS_ACCESS_KEY_ID: dummy
+          AWS_SECRET_ACCESS_KEY: dummy
+          AWS_ENDPOINT_URL_S3: https://dummy.s3.amazonaws.com
+          AWS_ENDPOINT_URL_IAM: https://dummy.iam.amazonaws.com
+          AWS_REGION: us-east-1
+          NEXT_PUBLIC_S3_BUCKET_NAME_IMG: dummy-bucket
+          STRIPE_SECRET_KEY: sk_test_dummy
+          STRIPE_WEBHOOK_SECRET: whsec_dummy
         run: pnpm build

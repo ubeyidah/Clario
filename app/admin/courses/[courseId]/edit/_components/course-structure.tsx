@@ -9,7 +9,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, ChevronRight, FileTextIcon, GripVertical, Layers, PlusIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode, useState } from "react"
 import { reorderChaptersA, reorderLessonsA } from "../actions";
 import { toast } from "sonner";
 import ChapterCreateDialog from "./chapter-create-dialog";
@@ -54,24 +54,28 @@ const CourseStructure = ({ data }: iAppProps) => {
       title: lesson.title
     }))
   })) || [];
-  const [items, setItems] = useState(initialItems)
-  useEffect(() => {
-    setItems(prev => {
-      const updatedItems = data.chapters.map((chapter) => ({
-        id: chapter.id,
-        title: chapter.title,
-        order: chapter.position,
-        isOpen: prev.find(item => item.id === chapter.id)?.isOpen ?? true,
-        lessons: chapter.lessons.map(lesson => ({
-          id: lesson.id,
-          order: lesson.position,
-          title: lesson.title
-        }))
-      })) || []
-      return updatedItems
-    })
-  }, [data])
 
+  const [prevData, setPrevData] = useState(data);
+  const [items, setItems] = useState(initialItems);
+
+  if (data !== prevData) {
+    setPrevData(data);
+    setItems((prev) => {
+      const updatedItems =
+        data.chapters.map((chapter) => ({
+          id: chapter.id,
+          title: chapter.title,
+          order: chapter.position,
+          isOpen: prev.find((item) => item.id === chapter.id)?.isOpen ?? true,
+          lessons: chapter.lessons.map((lesson) => ({
+            id: lesson.id,
+            order: lesson.position,
+            title: lesson.title,
+          })),
+        })) || [];
+      return updatedItems;
+    });
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -141,7 +145,7 @@ const CourseStructure = ({ data }: iAppProps) => {
           },
           error: (err) => {
             setItems(backupState)
-            return `Failed to reorder chapters: ${err.message}`;
+            return `Failed to reorder chapters: ${err.message}` ;
           }
         })
 
@@ -178,7 +182,7 @@ const CourseStructure = ({ data }: iAppProps) => {
           },
           error: (err) => {
             setItems(buackupItems)
-            return `Failed to reorder lessons: ${err.message}`;
+            return `Failed to reorder lessons: ${err.message}` ;
           }
         })
       }
@@ -301,4 +305,3 @@ const CourseStructure = ({ data }: iAppProps) => {
 }
 
 export default CourseStructure
-

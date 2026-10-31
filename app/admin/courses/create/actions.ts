@@ -63,7 +63,7 @@ export const createCourseA = async (
       description: data.shortDescription,
       default_price_data: {
         currency: "etb",
-        unit_amount: data.price * 100,
+        unit_amount: Math.round(data.price * 100),
       },
     });
 
@@ -72,6 +72,7 @@ export const createCourseA = async (
         ...data,
         userId: session?.user.id as string,
         stripePriceId: stripeCourse.default_price as string,
+        stripeProductId: stripeCourse.id,
       },
     });
     return {

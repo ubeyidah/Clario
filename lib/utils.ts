@@ -17,13 +17,19 @@ export function formatETB(amount: number): string {
 }
 
 export function formatDuration(value: number): string {
-  if (Number.isNaN(value) || value < 0) return "0:00";
+  if (Number.isNaN(value) || value <= 0) return "0m";
 
-  // Convert to minutes, then format as H:MM
-  const totalMinutes = value < 1 ? Math.round(value * 100) : value * 60;
+  const totalMinutes = Math.round(value * 60);
   const hours = Math.floor(totalMinutes / 60);
-  const minutes = Math.round(totalMinutes % 60);
-  return `${hours}:${minutes.toString().padStart(2, "0")}:00`;
+  const minutes = totalMinutes % 60;
+
+  if (hours === 0) {
+    return `${minutes}m`;
+  }
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+  return `${hours}h ${minutes}m`;
 }
 
 export function truncateText(text: string, maxLength = 20): string {

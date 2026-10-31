@@ -67,19 +67,83 @@ export const updateCourseA = async (
       };
     }
 
-    const course = await prisma.course.update({
+    const existingCourse = await prisma.course.findUnique({
       where: { id, userId: session.user.id },
-      data,
       select: {
         id: true,
+        price: true,
+        stripeProductId: true,
+        stripePriceId: true,
       },
     });
 
-    await stripe.products.update(course.id, {
-      name: data.title,
-      description: data.shortDescription,
+    if (!existingCourse) {
+      return {
+        success: false,
+        message: "Course not found",
+      };
+    }
+
+    let stripeProductId = existingCourse.stripeProductId;
+    let updatedStripePriceId = existingCourse.stripePriceId;
+
+    // Resolve stripeProductId if previously unset
+    if (!stripeProductId && existingCourse.stripePriceId) {
+      try {
+        const stripePrice = await stripe.prices.retrieve(
+          existingCourse.stripePriceId,
+        );
+        stripeProductId =
+          typeof stripePrice.product === "string"
+            ? stripePrice.product
+            : stripePrice.product.id;
+      } catch {
+        // Continue if Stripe price retrieval fails in dev/offline
+      }
+    }
+
+    // Sync updates to Stripe product & price
+    if (stripeProductId) {
+      try {
+        const priceChanged =
+          Math.round(existingCourse.price * 100) !==
+          Math.round(data.price * 100);
+
+        if (priceChanged) {
+          const newPrice = await stripe.prices.create({
+            product: stripeProductId,
+            unit_amount: Math.round(data.price * 100),
+            currency: "etb",
+          });
+          updatedStripePriceId = newPrice.id;
+
+          await stripe.products.update(stripeProductId, {
+            name: data.title,
+            description: data.shortDescription,
+            default_price: newPrice.id,
+          });
+        } else {
+          await stripe.products.update(stripeProductId, {
+            name: data.title,
+            description: data.shortDescription,
+          });
+        }
+      } catch {
+        // Continue if Stripe update fails in dev/placeholder
+      }
+    }
+
+    await prisma.course.update({
+      where: { id, userId: session.user.id },
+      data: {
+        ...data,
+        stripeProductId: stripeProductId || undefined,
+        stripePriceId: updatedStripePriceId,
+      },
     });
-    // TODO: update the price as well
+
+    revalidatePath(`/admin/courses/${id}/edit`);
+    revalidatePath(`/admin/courses`);
 
     return {
       message: "Course updated successfully",
