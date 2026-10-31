@@ -10,8 +10,8 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 |---|---|---|:---:|
 | **TICK-001** | Next.js 16.4 Upgrade, Schema Extension, Stripe Product ID & Currency Fix | `fix/phase-1-core-fixes-and-schema` | ✅ Merged (#15) |
 | **TICK-002** | Student Data Access Layer & Progress Mutation Actions | `feat/phase-2-student-dal-and-actions` | ✅ Merged (#16) |
-| **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | 🔄 In Progress |
-| **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | ⏳ Planned |
+| **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | ✅ Merged (#17) |
+| **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | 🔄 In Progress |
 
 ---
 
@@ -56,7 +56,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-003: Student Learning Dashboard (`/dashboard`)
 
 - **Branch**: `feat/phase-3-student-dashboard`
-- **Status**: 🔄 In Progress
+- **Status**: ✅ Merged (PR #17)
 - **Scope**:
   1. Layout: `app/dashboard/layout.tsx` with student header and user menu.
   2. Page: `app/dashboard/page.tsx` displaying:
@@ -70,9 +70,9 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-004: Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`)
 
 - **Branch**: `feat/phase-4-classroom-player`
-- **Status**: ⏳ Planned
+- **Status**: 🔄 In Progress
 - **Scope**:
-  1. Classroom Route: `app/learn/[courseId]/[lessonId]/page.tsx`.
-  2. HTML5 Video Player streaming from Tigris/S3 bucket.
+  1. Classroom Route: `app/learn/[courseId]/[lessonId]/page.tsx` and auto-redirect `app/learn/[courseId]/page.tsx`.
+  2. HTML5 Video Player streaming from Tigris/S3 bucket with playback speed and scrubber controls.
   3. Curriculum sidebar accordion displaying all chapters, lessons, active indicator, and completion checkboxes.
   4. Next/Previous lesson buttons and lesson description view.
