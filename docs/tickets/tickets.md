@@ -11,7 +11,10 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 | **TICK-001** | Next.js 16.4 Upgrade, Schema Extension, Stripe Product ID & Currency Fix | `fix/phase-1-core-fixes-and-schema` | ✅ Merged (#15) |
 | **TICK-002** | Student Data Access Layer & Progress Mutation Actions | `feat/phase-2-student-dal-and-actions` | ✅ Merged (#16) |
 | **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | ✅ Merged (#17) |
-| **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | 🔄 In Progress |
+| **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | ✅ Merged (#18) |
+| **TICK-005** | Course Completion Celebration, Verified Certificate & Dashboard Production Resilience | `feat/phase-5-course-completion` | 🔄 In Progress |
+| **TICK-006** | Global Error & 404 Boundaries (`error.tsx`, `not-found.tsx`) | `feat/phase-5-error-boundaries` | 📋 Backlog |
+| **TICK-007** | Student Account & Profile Settings (`/profile`) | `feat/phase-5-user-profile` | 📋 Backlog |
 
 ---
 
@@ -70,9 +73,52 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-004: Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`)
 
 - **Branch**: `feat/phase-4-classroom-player`
-- **Status**: 🔄 In Progress
+- **Status**: ✅ Merged (PR #18)
 - **Scope**:
   1. Classroom Route: `app/learn/[courseId]/[lessonId]/page.tsx` and auto-redirect `app/learn/[courseId]/page.tsx`.
   2. HTML5 Video Player streaming from Tigris/S3 bucket with playback speed and scrubber controls.
   3. Curriculum sidebar accordion displaying all chapters, lessons, active indicator, and completion checkboxes.
   4. Next/Previous lesson buttons and lesson description view.
+
+---
+
+## TICK-005: Course Completion Celebration, Verified Certificate & Dashboard Production Resilience
+
+- **Branch**: `feat/phase-5-course-completion`
+- **Status**: 🔄 In Progress
+- **Scope**:
+  1. **Dashboard Production Error Fixes**:
+     - Fix `proxy.ts` infinite redirect loop caused by optimistic redirect on stale/expired cookies.
+     - Protect `allLessonIds.length === 0` in `get-enrolled-courses.ts` against SQL syntax errors when querying Prisma `LessonProgress`.
+     - Add null-safety for `user.name` and `user.email` in `app/dashboard/page.tsx`.
+     - Enhance `useFileKeyToUrl` to safely handle empty, null, and absolute URLs with fallback placeholder.
+     - Add `app/dashboard/error.tsx` boundary with user-friendly retry button.
+     - Wrap `requireUser` in React `cache()` to eliminate redundant session database queries per request.
+     - Update `next.config.ts` remotePatterns with leading slashes (`pathname: "/**"`).
+  2. **Course Completion Celebration & Certificate**:
+     - Build `CourseCompletionModal` with confetti celebration and achievement dialog.
+     - Integrate celebration and certificate link in `CoursePlayerSidebar` and `LessonNavigationControls`.
+     - Create `/learn/[courseId]/certificate` route with print-ready certificate layout, verification ID, and credential sharing.
+     - Add certificate quick-action button on completed course cards in `/dashboard`.
+
+---
+
+## TICK-006: Global Error & 404 Boundaries
+
+- **Branch**: `feat/phase-5-error-boundaries`
+- **Status**: 📋 Backlog
+- **Scope**:
+  1. Root & route-specific error boundaries (`app/error.tsx`, `app/global-error.tsx`).
+  2. Custom 404 Not Found page (`app/not-found.tsx`) styled with Clario brand theme.
+  3. Recovery button to retry rendering or return to dashboard/home.
+
+---
+
+## TICK-007: Student Account & Profile Settings
+
+- **Branch**: `feat/phase-5-user-profile`
+- **Status**: 📋 Backlog
+- **Scope**:
+  1. Profile page (`/profile` or `/dashboard/profile`).
+  2. Edit user name, avatar upload via Tigris S3, and password update via Better Auth.
+  3. View active session list and revoke devices.

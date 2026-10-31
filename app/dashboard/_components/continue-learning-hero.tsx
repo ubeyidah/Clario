@@ -4,15 +4,16 @@ import { EnrolledCourseItem } from "@/app/data/student/get-enrolled-courses";
 import { buttonVariants } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { useFileKeyToUrl } from "@/hooks/use-file-key-to-url";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { PlayIcon, CheckmarkBadge01Icon } from "@hugeicons/core-free-icons";
+import { PlayIcon, CheckmarkBadge01Icon, Certificate01Icon } from "@hugeicons/core-free-icons";
 
 interface ContinueLearningHeroProps {
   course: EnrolledCourseItem;
 }
 
 export function ContinueLearningHero({ course }: ContinueLearningHeroProps) {
-  const thumbnailUrl = `https://clario.t3.storage.dev/${course.fileKey}`;
+  const thumbnailUrl = useFileKeyToUrl(course.fileKey);
   const targetHref = course.nextLessonId
     ? `/learn/${course.id}/${course.nextLessonId}`
     : `/learn/${course.id}`;
@@ -49,26 +50,55 @@ export function ContinueLearningHero({ course }: ContinueLearningHeroProps) {
             <Progress value={course.progressPercentage} className="h-2.5" />
           </div>
 
-          <div className="pt-2 flex items-center gap-3">
-            <Link
-              href={targetHref}
-              className={buttonVariants({
-                size: "lg",
-                className: "rounded-xl font-medium gap-2 shadow-sm",
-              })}
-            >
-              {course.isCompleted ? (
-                <>
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            {course.totalLessons === 0 ? (
+              <Link
+                href={`/courses/${course.slug}`}
+                className={buttonVariants({
+                  variant: "secondary",
+                  size: "lg",
+                  className: "rounded-xl font-medium",
+                })}
+              >
+                Curriculum Coming Soon
+              </Link>
+            ) : course.isCompleted ? (
+              <>
+                <Link
+                  href={`/learn/${course.id}/certificate`}
+                  className={buttonVariants({
+                    size: "lg",
+                    className: "rounded-xl font-medium gap-2 shadow-sm bg-emerald-600 hover:bg-emerald-700 text-white",
+                  })}
+                >
+                  <HugeiconsIcon icon={Certificate01Icon} className="size-5" />
+                  View Certificate
+                </Link>
+                <Link
+                  href={targetHref}
+                  className={buttonVariants({
+                    variant: "outline",
+                    size: "lg",
+                    className: "rounded-xl font-medium gap-2",
+                  })}
+                >
                   <HugeiconsIcon icon={CheckmarkBadge01Icon} className="size-5" />
                   Review Course
-                </>
-              ) : (
-                <>
-                  <HugeiconsIcon icon={PlayIcon} className="size-5 fill-current" />
-                  Resume Learning
-                </>
-              )}
-            </Link>
+                </Link>
+              </>
+            ) : (
+              <Link
+                href={targetHref}
+                className={buttonVariants({
+                  size: "lg",
+                  className: "rounded-xl font-medium gap-2 shadow-sm",
+                })}
+              >
+                <HugeiconsIcon icon={PlayIcon} className="size-5 fill-current" />
+                Resume Learning
+              </Link>
+            )}
+
             <Link
               href={`/courses/${course.slug}`}
               className={buttonVariants({
