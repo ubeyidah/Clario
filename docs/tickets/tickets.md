@@ -9,8 +9,8 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 | Ticket ID | Title | Branch | Status |
 |---|---|---|:---:|
 | **TICK-001** | Next.js 16.4 Upgrade, Schema Extension, Stripe Product ID & Currency Fix | `fix/phase-1-core-fixes-and-schema` | ✅ Merged (#15) |
-| **TICK-002** | Student Data Access Layer & Progress Mutation Actions | `feat/phase-2-student-dal-and-actions` | 🔄 In Progress |
-| **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | ⏳ Planned |
+| **TICK-002** | Student Data Access Layer & Progress Mutation Actions | `feat/phase-2-student-dal-and-actions` | ✅ Merged (#16) |
+| **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | 🔄 In Progress |
 | **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | ⏳ Planned |
 
 ---
@@ -40,7 +40,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-002: Student Data Access Layer & Progress Mutation Actions
 
 - **Branch**: `feat/phase-2-student-dal-and-actions`
-- **Status**: 🔄 In Progress
+- **Status**: ✅ Merged (PR #16)
 - **Scope**:
   1. `app/data/student/get-enrolled-courses.ts`:
      - Fetch active user enrollments with total lessons, completed lessons count, progress %, and next uncompleted lesson ID.
@@ -56,7 +56,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-003: Student Learning Dashboard (`/dashboard`)
 
 - **Branch**: `feat/phase-3-student-dashboard`
-- **Status**: ⏳ Planned
+- **Status**: 🔄 In Progress
 - **Scope**:
   1. Layout: `app/dashboard/layout.tsx` with student header and user menu.
   2. Page: `app/dashboard/page.tsx` displaying:

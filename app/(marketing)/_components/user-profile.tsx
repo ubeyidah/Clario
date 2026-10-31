@@ -29,11 +29,13 @@ const UserProfile = () => {
   if (!data || isPending || error) return <Link href="/sign-in" className={buttonVariants()}>Sign In</Link>
   const userName = data?.user.name || data?.user.email?.split('@')[0]
   const fallbackImage = `https://avatar.vercel.sh/${userName}?rounded=60`
+  const isAdmin = data?.user.role === "admin"
+
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="w-8 h-8">
+          <Avatar className="w-8 h-8 cursor-pointer">
             <AvatarImage className="size-8" src={data?.user.image ?? fallbackImage} alt={userName} />
             <AvatarFallback>{userName?.slice(0, 2)}</AvatarFallback>
           </Avatar>
@@ -52,10 +54,15 @@ const UserProfile = () => {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href="/admin" className="w-full">Dashboard</Link>
+              <Link href="/dashboard" className="w-full cursor-pointer">My Learning</Link>
             </DropdownMenuItem>
+            {isAdmin && (
+              <DropdownMenuItem asChild>
+                <Link href="/admin" className="w-full cursor-pointer">Admin Dashboard</Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem asChild>
-              <Link href="/profile" className="w-full">Profile</Link>
+              <Link href="/courses" className="w-full cursor-pointer">Browse Courses</Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -70,8 +77,7 @@ const UserProfile = () => {
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={signOut}>Sign Out</DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onClick={signOut} className="cursor-pointer">Sign Out</DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
