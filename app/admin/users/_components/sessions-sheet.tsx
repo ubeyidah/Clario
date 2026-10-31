@@ -36,7 +36,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
+import { timeAgo } from "@/lib/date";
 
 export interface SessionData {
   id: string;
@@ -172,7 +172,7 @@ function SessionCard({
             <span>
               Signed in:{" "}
               <strong className="text-foreground/80 font-medium">
-                {formatDistanceToNow(createdDate, { addSuffix: true })}
+                {timeAgo(createdDate)}
               </strong>
             </span>
           </div>
@@ -181,7 +181,7 @@ function SessionCard({
             <span>
               Expires:{" "}
               <strong className="text-foreground/80 font-medium">
-                {format(expiresDate, "MMM d, yyyy")}
+                {expiresDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </strong>
             </span>
           </div>
@@ -373,4 +373,5 @@ export function SessionsSheet({ open, onOpenChange, userId, userName }: Sessions
     </Sheet>
   );
 }
+
 
