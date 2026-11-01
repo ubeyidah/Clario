@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { IconMail } from "@tabler/icons-react";
+import { sendAdminEmailA } from "../actions";
 
 interface SendEmailSheetProps {
   open: boolean;
@@ -24,7 +25,12 @@ interface SendEmailSheetProps {
   userName: string;
 }
 
-export function SendEmailSheet({ open, onOpenChange, userEmail, userName }: SendEmailSheetProps) {
+export function SendEmailSheet({
+  open,
+  onOpenChange,
+  userEmail,
+  userName,
+}: SendEmailSheetProps) {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [isPending, setIsPending] = useState(false);
@@ -54,17 +60,24 @@ export function SendEmailSheet({ open, onOpenChange, userEmail, userName }: Send
 
     setIsPending(true);
     try {
-      // Simulate API call - replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      toast.success(`Email sent to ${userEmail}`);
+      const res = await sendAdminEmailA({
+        to: userEmail,
+        subject,
+        message,
+      });
+
+      toast.success(res.message || `Email sent to ${userEmail}`);
       onOpenChange(false);
       setSubject("");
       setMessage("");
       setErrors({});
     } catch (error) {
       console.error("Failed to send email:", error);
-      toast.error("Failed to send email. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to send email. Please try again."
+      );
     } finally {
       setIsPending(false);
     }
@@ -83,13 +96,16 @@ export function SendEmailSheet({ open, onOpenChange, userEmail, userName }: Send
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader className="px-6">
-          <SheetTitle>Send Email</SheetTitle>
+          <SheetTitle className="flex items-center gap-2">
+            <IconMail className="size-5 text-primary" />
+            Send Email
+          </SheetTitle>
           <SheetDescription>
-            Send an email to {userName} ({userEmail})
+            Send an official communication to <strong>{userName}</strong> ({userEmail})
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 px-6 space-y-4 py-4">
+        <div className="flex-1 px-6 space-y-4 py-4 overflow-y-auto">
           <div className="space-y-2">
             <Label htmlFor="email">To</Label>
             <Input id="email" value={userEmail} disabled className="bg-muted" />
@@ -99,7 +115,7 @@ export function SendEmailSheet({ open, onOpenChange, userEmail, userName }: Send
             <Label htmlFor="subject">Subject</Label>
             <Input
               id="subject"
-              placeholder="Enter subject..."
+              placeholder="e.g. Important update regarding your enrolled course"
               value={subject}
               onChange={(e) => {
                 setSubject(e.target.value);
@@ -116,7 +132,7 @@ export function SendEmailSheet({ open, onOpenChange, userEmail, userName }: Send
             <Label htmlFor="message">Message</Label>
             <Textarea
               id="message"
-              placeholder="Write your message..."
+              placeholder="Write your email body..."
               rows={8}
               value={message}
               onChange={(e) => {
@@ -134,12 +150,20 @@ export function SendEmailSheet({ open, onOpenChange, userEmail, userName }: Send
           </div>
         </div>
 
-        <SheetFooter className="px-6">
-          <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={isPending}>
+        <SheetFooter className="px-6 border-t pt-4">
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isPending}
+          >
             Cancel
           </Button>
           <Button onClick={handleSend} disabled={isPending}>
-            {isPending ? <Spinner className="mr-2" /> : <IconMail className="mr-2 h-4 w-4" />}
+            {isPending ? (
+              <Spinner className="mr-2" />
+            ) : (
+              <IconMail className="mr-2 h-4 w-4" />
+            )}
             Send Email
           </Button>
         </SheetFooter>

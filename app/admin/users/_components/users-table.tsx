@@ -72,6 +72,7 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
   React.useEffect(() => {
     setData(initialUsers);
   }, [initialUsers]);
+
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -98,7 +99,6 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
     setIsLoadingUser(true);
 
     try {
-      // Import and call the server action
       const { getUserDetailA } = await import("../actions");
       const userDetail = await getUserDetailA(user.id);
       setSelectedUser(userDetail);
@@ -113,6 +113,42 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
     setBanUserIds(userIds);
     setBanDialogOpen(true);
   };
+
+  const handleUnban = React.useCallback(
+    async (userId: string) => {
+      try {
+        await authClient.admin.unbanUser({ userId });
+        toast.success("User has been unbanned");
+        setData((prev) =>
+          prev.map((user) => (user.id === userId ? { ...user, banned: false } : user))
+        );
+        setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, banned: false } : prev));
+        router.refresh();
+      } catch (error) {
+        console.error("Failed to unban user:", error);
+        toast.error("Failed to unban user");
+      }
+    },
+    [router]
+  );
+
+  const handleRoleChange = React.useCallback(
+    async (userId: string, newRole: "admin" | "student") => {
+      try {
+        const { updateUserRoleA } = await import("../actions");
+        const res = await updateUserRoleA(userId, newRole);
+        toast.success(res.message);
+        setData((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+        );
+        setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, role: newRole } : prev));
+        router.refresh();
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to update role");
+      }
+    },
+    [router]
+  );
 
   // Create dynamic columns with click handlers
   const dynamicColumns = React.useMemo<ColumnDef<AdminUser>[]>(() => [
@@ -155,11 +191,15 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
             <Avatar className="h-8 w-8 flex-shrink-0">
               <AvatarImage src={user.image || undefined} alt={user.name} />
               <AvatarFallback>
-                <AvatarFallback>
-                {user.name.trim() 
-                  ? user.name.trim().split(/\s+/).map(n => n[0]).join('').toUpperCase().slice(0, 2)
-                  : '??'}
-                </AvatarFallback>
+                {user.name.trim()
+                  ? user.name
+                      .trim()
+                      .split(/\s+/)
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                      .slice(0, 2)
+                  : "??"}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0">
@@ -179,7 +219,7 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
         const displayRole = role === "admin" ? "Admin" : "Student";
         const variants = {
           admin: "destructive",
-          student: "secondary"
+          student: "secondary",
         } as const;
 
         return (
@@ -227,34 +267,17 @@ export function UsersTable({ initialUsers }: { initialUsers: AdminUser[] }) {
       cell: ({ row }) => {
         const user = row.original;
 
-const handleUnban = async (userId: string) => {
-          try {
-            await authClient.admin.unbanUser({ userId });
-            toast.success("User has been unbanned");
-            setData(prev => prev.map(user => 
-              user.id === userId ? { ...user, banned: false } : user
-            ));
-            router.refresh();
-          } catch (error) {
-            console.error("Failed to unban user:", error);
-            toast.error("Failed to unban user");
-          }
-        };
-
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="h-8 w-8 p-0"
-              >
+              <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
                 <IconDotsVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-<DropdownMenuContent align="end">
+            <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 disabled={currentUserId === user.id}
                 onClick={() => {
                   navigator.clipboard.writeText(user.id);
@@ -264,8 +287,7 @@ const handleUnban = async (userId: string) => {
                 Copy user ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                disabled={currentUserId === user.id}
+              <DropdownMenuItem
                 onClick={() => {
                   setEmailUser({ email: user.email, name: user.name });
                   setSendEmailOpen(true);
@@ -278,7 +300,7 @@ const handleUnban = async (userId: string) => {
                 <IconUserCheck className="mr-2 h-4 w-4" />
                 View profile
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => {
                   setSessionUser({ id: user.id, name: user.name });
                   setSessionsOpen(true);
@@ -288,9 +310,27 @@ const handleUnban = async (userId: string) => {
                 Sessions
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              {user.role === "admin" ? (
+                <DropdownMenuItem
+                  disabled={currentUserId === user.id}
+                  onClick={() => handleRoleChange(user.id, "student")}
+                >
+                  <IconUserCheck className="mr-2 h-4 w-4" />
+                  Demote to Student
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  disabled={currentUserId === user.id}
+                  onClick={() => handleRoleChange(user.id, "admin")}
+                >
+                  <IconUserCheck className="mr-2 h-4 w-4" />
+                  Promote to Admin
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
               {user.banned ? (
-                <DropdownMenuItem 
-                  className="text-green-600" 
+                <DropdownMenuItem
+                  className="text-green-600"
                   disabled={currentUserId === user.id}
                   onClick={() => handleUnban(user.id)}
                 >
@@ -298,8 +338,8 @@ const handleUnban = async (userId: string) => {
                   Unban
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem 
-                  variant="destructive" 
+                <DropdownMenuItem
+                  variant="destructive"
                   disabled={currentUserId === user.id}
                   onClick={() => openBanDialog([user.id])}
                 >
@@ -312,7 +352,7 @@ const handleUnban = async (userId: string) => {
         );
       },
     },
-  ], [router, currentUserId]);
+  ], [currentUserId, handleRoleChange, handleUnban]);
 
   const table = useReactTable({
     data,
@@ -339,31 +379,35 @@ const handleUnban = async (userId: string) => {
 
   const handleExportSelected = () => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
-    const users = selectedRows.map(row => row.original);
-    
+    const users = selectedRows.map((row) => row.original);
+
     const escapeCSV = (field: string | number | boolean): string => {
       const str = String(field);
       return `"${str.replace(/"/g, '""')}"`;
     };
-    
-    const csvContent = [
-      ['ID', 'Name', 'Email', 'Role', 'Status', 'Enrolled', 'Created'].join(','),
-      ...users.map(u => [
-        u.id,
-        u.name,
-        u.email,
-        u.role || '',
-        u.banned ? 'Banned' : 'Active',
-        u._count.enrollments,
-        u.createdAt.toISOString()
-      ].map(escapeCSV).join(','))
-    ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const csvContent = [
+      ["ID", "Name", "Email", "Role", "Status", "Enrolled", "Created"].join(","),
+      ...users.map((u) =>
+        [
+          u.id,
+          u.name,
+          u.email,
+          u.role || "",
+          u.banned ? "Banned" : "Active",
+          u._count.enrollments,
+          u.createdAt.toISOString(),
+        ]
+          .map(escapeCSV)
+          .join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'selected-users.csv';
+    a.download = "selected-users.csv";
     a.click();
     URL.revokeObjectURL(url);
     setRowSelection({});
@@ -372,22 +416,25 @@ const handleUnban = async (userId: string) => {
 
   const handleBanSelected = () => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
-    const userIds = selectedRows.map(row => row.original.id);
-    
+    const userIds = selectedRows.map((row) => row.original.id);
+
     if (currentUserId && userIds.includes(currentUserId)) {
       toast.error("You cannot ban yourself");
       return;
     }
-    
+
     openBanDialog(userIds);
   };
 
-  const selectedUserIds = table.getFilteredSelectedRowModel().rows.map(row => row.original.id);
-  const includesCurrentUser = Boolean(currentUserId && selectedUserIds.includes(currentUserId));
+  const selectedUserIds = table
+    .getFilteredSelectedRowModel()
+    .rows.map((row) => row.original.id);
+  const includesCurrentUser = Boolean(
+    currentUserId && selectedUserIds.includes(currentUserId)
+  );
 
   return (
     <div className="space-y-4">
-
       <div className="rounded-md border overflow-x-auto">
         <Table className="min-w-full">
           <TableHeader className="[&_tr]:bg-muted/50 [&_tr]:hover:bg-muted/50">
@@ -395,7 +442,10 @@ const handleUnban = async (userId: string) => {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="whitespace-nowrap [&_tr]:hover:bg-muted/50">
+                    <TableHead
+                      key={header.id}
+                      className="whitespace-nowrap [&_tr]:hover:bg-muted/50"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -424,7 +474,10 @@ const handleUnban = async (userId: string) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={dynamicColumns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={dynamicColumns.length}
+                  className="h-24 text-center"
+                >
                   No users found.
                 </TableCell>
               </TableRow>
@@ -553,19 +606,31 @@ const handleUnban = async (userId: string) => {
           }
         }}
         isLoading={isLoadingUser}
+        onSendEmail={(user) => {
+          setEmailUser(user);
+          setSendEmailOpen(true);
+        }}
+        onToggleBan={(userId, isBanned) => {
+          if (isBanned) {
+            handleUnban(userId);
+          } else {
+            openBanDialog([userId]);
+          }
+        }}
+        onRoleChange={handleRoleChange}
       />
 
       <BanDialog
         open={banDialogOpen}
         onOpenChange={setBanDialogOpen}
         userIds={banUserIds}
-        userNames={data.filter(u => banUserIds.includes(u.id)).map(u => u.name)}
+        userNames={data.filter((u) => banUserIds.includes(u.id)).map((u) => u.name)}
         onBanSuccess={(bannedUserIds) => {
-          setData(prev => prev.map(user => 
-            bannedUserIds.includes(user.id) 
-              ? { ...user, banned: true } 
-              : user
-          ));
+          setData((prev) =>
+            prev.map((user) =>
+              bannedUserIds.includes(user.id) ? { ...user, banned: true } : user
+            )
+          );
         }}
       />
 

@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconChartBar,
   IconCirclePlusFilled,
   IconDashboard,
   IconDatabase,
   IconHelp,
-  IconSearch,
+  IconReceipt,
   IconSettings,
   IconUsers,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { NavMain } from "@/components/sidebar/nav-main"
-import { NavSecondary } from "@/components/sidebar/nav-secondary"
-import { NavUser } from "@/components/sidebar/nav-user"
+import { NavMain } from "@/components/sidebar/nav-main";
+import { NavSecondary } from "@/components/sidebar/nav-secondary";
+import { NavUser } from "@/components/sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -23,12 +23,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
-import Image from "next/image"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import Image from "next/image";
 
 const data = {
-
   navMain: [
     {
       title: "Dashboard",
@@ -50,30 +49,30 @@ const data = {
       url: "/admin/analytics",
       icon: IconChartBar,
     },
-     {
-       title: "Users",
-       url: "/admin/users",
-       icon: IconUsers,
-     },
+    {
+      title: "Sales Ledger",
+      url: "/admin/enrollments",
+      icon: IconReceipt,
+    },
+    {
+      title: "Users",
+      url: "/admin/users",
+      icon: IconUsers,
+    },
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
+      title: "Settings & Health",
+      url: "/admin/settings",
       icon: IconSettings,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: "Platform Docs",
+      url: "https://github.com",
       icon: IconHelp,
     },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -83,10 +82,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5! mb-3 hover:bg-transparent focus:bg-transparent">
+              className="data-[slot=sidebar-menu-button]:p-1.5! mb-3 hover:bg-transparent focus:bg-transparent"
+            >
               <Link href="/">
-
-                <Image src="/clario.png" width={32} height={32} className="max-md:size-10" alt="clario" />
+                <Image
+                  src="/clario.png"
+                  width={32}
+                  height={32}
+                  className="max-md:size-10"
+                  alt="clario"
+                />
                 <span className="text-lg font-semibold">Clario.</span>
               </Link>
             </SidebarMenuButton>
@@ -101,5 +106,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
