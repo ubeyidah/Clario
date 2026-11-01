@@ -15,3 +15,15 @@ export const requireUser = cache(async () => {
 
   return session.user;
 });
+
+export const getFullSession = cache(async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return redirect("/sign-in", RedirectType.replace);
+  }
+
+  return session;
+});
