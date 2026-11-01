@@ -12,8 +12,8 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 | **TICK-002** | Student Data Access Layer & Progress Mutation Actions | `feat/phase-2-student-dal-and-actions` | ✅ Merged (#16) |
 | **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | ✅ Merged (#17) |
 | **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | ✅ Merged (#18) |
-| **TICK-005** | Course Completion Celebration, Verified Certificate & Dashboard Production Resilience | `feat/phase-5-course-completion` | 🔄 In Progress |
-| **TICK-006** | Global Error & 404 Boundaries (`error.tsx`, `not-found.tsx`) | `feat/phase-5-error-boundaries` | 📋 Backlog |
+| **TICK-005** | Course Completion Celebration, Verified Certificate & Dashboard Production Resilience | `feat/phase-5-course-completion` | ✅ Merged (#19) |
+| **TICK-006** | Global Error & 404 Boundaries (`error.tsx`, `not-found.tsx`, `global-error.tsx`) | `feat/phase-5-error-boundaries` | 🔄 In Progress |
 | **TICK-007** | Student Account & Profile Settings (`/profile`) | `feat/phase-5-user-profile` | 📋 Backlog |
 
 ---
@@ -85,7 +85,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-005: Course Completion Celebration, Verified Certificate & Dashboard Production Resilience
 
 - **Branch**: `feat/phase-5-course-completion`
-- **Status**: 🔄 In Progress
+- **Status**: ✅ Merged (PR #19)
 - **Scope**:
   1. **Dashboard Production Error Fixes**:
      - Fix `proxy.ts` infinite redirect loop caused by optimistic redirect on stale/expired cookies.
@@ -106,11 +106,13 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-006: Global Error & 404 Boundaries
 
 - **Branch**: `feat/phase-5-error-boundaries`
-- **Status**: 📋 Backlog
+- **Status**: 🔄 In Progress
 - **Scope**:
-  1. Root & route-specific error boundaries (`app/error.tsx`, `app/global-error.tsx`).
-  2. Custom 404 Not Found page (`app/not-found.tsx`) styled with Clario brand theme.
-  3. Recovery button to retry rendering or return to dashboard/home.
+  1. Custom 404 Not Found page (`app/not-found.tsx`) styled with Clario brand theme and quick navigation.
+  2. Root application error boundary (`app/error.tsx`) with incident digest and retry.
+  3. Critical global layout error boundary (`app/global-error.tsx`).
+  4. Classroom playback error boundary (`app/learn/[courseId]/error.tsx`).
+  5. Admin management error boundary (`app/admin/error.tsx`).
 
 ---
 
