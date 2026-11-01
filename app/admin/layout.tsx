@@ -1,12 +1,15 @@
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 import { ReactNode } from "react";
 
-const AdminLayout = ({
+const AdminLayout = async ({
   children,
-}:
-  { children: ReactNode; }
-) => {
+}: {
+  children: ReactNode;
+}) => {
+  await requireAdmin();
+
   return (
     <SidebarProvider
       style={
@@ -23,7 +26,7 @@ const AdminLayout = ({
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
-}
+  );
+};
 
-export default AdminLayout; 
+export default AdminLayout;

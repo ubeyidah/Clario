@@ -1,60 +1,84 @@
+import { Suspense } from "react";
+import Link from "next/link";
 import { SiteHeader } from "@/components/common/site-header";
 import { buttonVariants } from "@/components/ui/button";
-import SearchBar from "@/components/ui/search-bar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { COURSE_CATEGORIES } from "@/lib/constants";
-import Link from "next/link";
 import CourseCard from "./_components/course-card";
 import { getAdminCourses } from "@/app/data/admin/get-admin-courses";
+import type { AdminCourseFilterParams } from "@/app/data/admin/get-admin-courses";
 import { EmptyCourse } from "./_components/course-empty";
-import { Suspense } from "react";
 import CourseCardSkeleton from "./_components/course-card-skeleton";
+import { CoursesFilterBar } from "./_components/courses-filter-bar";
+import { IconCirclePlus } from "@tabler/icons-react";
 
-const CoursesPage = () => {
+interface CoursesPageProps {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    status?: string;
+  }>;
+}
+
+export const dynamic = "force-dynamic";
+
+export default async function CoursesPage({ searchParams }: CoursesPageProps) {
+  const resolvedParams = await searchParams;
+
+  const filters: AdminCourseFilterParams = {
+    search: resolvedParams.search,
+    category: resolvedParams.category,
+    status: resolvedParams.status as "Draft" | "Published" | "Archived" | "all" | undefined,
+  };
+
   return (
     <main>
       <SiteHeader>
-        <Link className={buttonVariants({ size: "sm", variant: "secondary" })} href="/admin/courses/create">Create Course</Link>
+        <Link
+          className={buttonVariants({ size: "sm", className: "h-8 text-xs gap-1" })}
+          href="/admin/courses/create"
+        >
+          <IconCirclePlus className="size-3.5" />
+          Create Course
+        </Link>
       </SiteHeader>
-      <div className="p-4 md:p-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <h1 className="text-xl font-sem">Your Courses</h1>
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <SearchBar />
-            <Select defaultValue="All Courses">
-              <SelectTrigger
-                id="category"
-              >
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent position="item-aligned">
-                {[{ label: "All Courses", id: "all-courses" }, ...COURSE_CATEGORIES].map((category) => (
-                  <SelectItem key={category.id} value={category.label}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+
+      <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">Course Management</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Create, publish, and monitor performance across your instructional library.
+          </p>
         </div>
 
+        <CoursesFilterBar
+          currentSearch={filters.search}
+          currentCategory={filters.category}
+          currentStatus={filters.status}
+        />
+
         <Suspense fallback={<CourseCardSkeleton />}>
-          <RenderAdminCourses />
+          <RenderAdminCourses filters={filters} />
         </Suspense>
       </div>
     </main>
-  )
+  );
 }
 
-async function RenderAdminCourses() {
-  const courses = await getAdminCourses();
-  return <div className="mt-6">
-    {
-      courses.length ? courses.map((course, i) => <CourseCard course={course} key={course.id} isFirst={i == 0} />) : <EmptyCourse />
-    }
-  </div>
+async function RenderAdminCourses({
+  filters,
+}: {
+  filters: AdminCourseFilterParams;
+}) {
+  const courses = await getAdminCourses(filters);
+
+  if (courses.length === 0) {
+    return <EmptyCourse />;
+  }
+
+  return (
+    <div className="rounded-xl border bg-card/30 divide-y divide-border/60 overflow-hidden">
+      {courses.map((course, i) => (
+        <CourseCard course={course} key={course.id} isFirst={i === 0} />
+      ))}
+    </div>
+  );
 }
-
-
-export default CoursesPage;
-
