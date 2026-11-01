@@ -49,3 +49,17 @@ export const lessonProgressSchema = z.object({
   lessonId: z.string().min(1, "Lesson ID is required"),
   completed: z.boolean(),
 })
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters long").max(50, "Name cannot exceed 50 characters"),
+  image: z.string().nullable().optional(),
+})
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(8, "Current password must be at least 8 characters"),
+  newPassword: z.string().min(8, "New password must be at least 8 characters"),
+  confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+})

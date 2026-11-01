@@ -13,8 +13,8 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 | **TICK-003** | Student Learning Dashboard (`/dashboard`) | `feat/phase-3-student-dashboard` | ✅ Merged (#17) |
 | **TICK-004** | Course Classroom, Video Player & Curriculum Sidebar (`/learn/...`) | `feat/phase-4-classroom-player` | ✅ Merged (#18) |
 | **TICK-005** | Course Completion Celebration, Verified Certificate & Dashboard Production Resilience | `feat/phase-5-course-completion` | ✅ Merged (#19) |
-| **TICK-006** | Global Error & 404 Boundaries (`error.tsx`, `not-found.tsx`, `global-error.tsx`) | `feat/phase-5-error-boundaries` | 🔄 In Progress |
-| **TICK-007** | Student Account & Profile Settings (`/profile`) | `feat/phase-5-user-profile` | 📋 Backlog |
+| **TICK-006** | Global Error & 404 Boundaries (`error.tsx`, `not-found.tsx`, `global-error.tsx`) | `feat/phase-5-error-boundaries` | ✅ Merged (#20) |
+| **TICK-007** | Student Account & Profile Settings (`/profile`) | `feat/phase-5-user-profile` | 🔄 In Progress |
 
 ---
 
@@ -106,7 +106,7 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-006: Global Error & 404 Boundaries
 
 - **Branch**: `feat/phase-5-error-boundaries`
-- **Status**: 🔄 In Progress
+- **Status**: ✅ Merged (PR #20)
 - **Scope**:
   1. Custom 404 Not Found page (`app/not-found.tsx`) styled with Clario brand theme and quick navigation.
   2. Root application error boundary (`app/error.tsx`) with incident digest and retry.
@@ -119,8 +119,11 @@ This document defines the actionable ticket backlog derived from [spec.md](../sp
 ## TICK-007: Student Account & Profile Settings
 
 - **Branch**: `feat/phase-5-user-profile`
-- **Status**: 📋 Backlog
+- **Status**: 🔄 In Progress
 - **Scope**:
-  1. Profile page (`/profile` or `/dashboard/profile`).
-  2. Edit user name, avatar upload via Tigris S3, and password update via Better Auth.
-  3. View active session list and revoke devices.
+  1. Route protection: Guard `/profile` via `proxy.ts` and `requireUser()`.
+  2. User Profile Header with avatar, role, verified badge, and course completion counters.
+  3. Profile Info Form: Update display name and upload avatar directly to S3 / Tigris storage.
+  4. Security & Password Form: Change password, provider awareness, and optional session invalidation.
+  5. Active Sessions Management: View signed-in devices with OS/browser parsing, IP, and individual or bulk revocation.
+  6. Navigation link in `UserProfile` dropdown menu.

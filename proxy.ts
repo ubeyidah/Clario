@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
-const privatePrefixes = ["/admin", "/dashboard", "/learn"];
+const privatePrefixes = ["/admin", "/dashboard", "/learn", "/profile"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,5 +23,6 @@ export const config = {
     "/admin/:path*",
     "/dashboard/:path*",
     "/learn/:path*",
+    "/profile/:path*",
   ],
 };
